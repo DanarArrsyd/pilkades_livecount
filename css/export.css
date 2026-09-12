@@ -1,0 +1,49 @@
+/* Hallmark · redesign · export (reuses tps.css page chrome) */
+
+.export-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.export-card {
+  border: 2px solid var(--color-navy);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  background: var(--color-surface);
+}
+
+.export-card h3 {
+  font-size: 15px;
+  margin-bottom: var(--space-1);
+}
+
+.export-card p {
+  color: var(--color-ink-muted);
+  font-size: 12px;
+  margin: 0 0 var(--space-4);
+  min-height: 32px;
+}
+
+.export-card button {
+  width: 100%;
+  padding: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.print-only { display: none; }
+
+@media print {
+  .page-header, .export-grid, .page-sub, .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  body { background: #fff; color: #000; }
+  .print-report table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  .print-report th, .print-report td { border: 1px solid #999; padding: 4px 8px; font-size: 11px; text-align: left; }
+  .print-report h1 { font-size: 18px; }
+  .print-report h2 { font-size: 14px; margin-top: 24px; }
+}
+
+@media (max-width: 640px) {
+  .export-grid { grid-template-columns: 1fr; }
+}

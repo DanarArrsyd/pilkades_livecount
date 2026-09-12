@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rapid Input — Pilkades Live Count</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/nav.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu"><span></span><span></span><span></span></button>
+      <span class="wordmark">Pilkades Live Count</span>
+    </div>
+    <span id="connState" class="conn-online">ONLINE ●</span>
+  </div>
+
+  <div class="console">
+    <div class="report-grid">
+      <div class="left-col">
+        <div class="report-box">
+          <div class="report-box-header">TPS</div>
+          <div class="report-box-value" id="activeTpsNumber">--</div>
+          <div class="report-box-status"><span class="badge status-not_started" id="tpsStatusBadge">-</span></div>
+          <div class="tps-switch-row">
+            <input type="text" id="tpsSwitchInput" placeholder="/7 lalu Enter" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="report-box">
+          <div class="report-box-header">Total Suara Masuk</div>
+          <div class="report-box-value" id="tpsTotal">0</div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="status-line">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusLineText">Memuat...</span>
+        </div>
+
+        <div class="locked-banner hidden" id="lockedBanner">TPS ini terkunci — input ditolak. Buka kunci lewat halaman TPS.</div>
+        <div class="ledger" id="candidateGrid">
+          <!-- rendered by vote-input.js -->
+        </div>
+
+        <div class="summary-block">
+          <div class="recent-tps-label">Last Input TPS</div>
+          <div class="recent-tps" id="recentTps"></div>
+
+          <div class="last-input-label">Last Input Log</div>
+          <div class="last-input" id="lastInput" aria-live="polite">Belum ada input.</div>
+          <div class="undo-hint">- backspace untuk undo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shortcut-footer">
+    <span class="key"><kbd>1</kbd>–<kbd>5</kbd> vote kandidat</span>
+    <span class="key"><kbd>0</kbd> tidak sah</span>
+    <span class="key"><kbd>⌫</kbd> undo</span>
+    <span class="key"><kbd>/</kbd> ganti TPS</span>
+  </div>
+
+  <div id="toast" class="hidden" role="status" aria-live="assertive"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/vote-input.js"></script>
+  <script>
+    initNav({
+      active: 'input',
+      hamburgerTarget: '#hamburgerBtn',
+      links: [
+        { key: 'dashboard', label: 'Dashboard (Publik)', href: '../index.html' },
+        { key: 'input', label: 'Rapid Input', href: 'input.html' },
+        { key: 'tps', label: 'TPS', href: 'tps.html' },
+        { key: 'candidates', label: 'Kelola Paslon', href: 'candidates.html' },
+        { key: 'logs', label: 'Log Aktivitas', href: 'logs.html' },
+        { key: 'export', label: 'Export', href: 'export.html' },
+        { key: 'snapshots', label: 'Snapshot', href: 'snapshots.html' },
+      ],
+    });
+  </script>
+</body>
+</html>

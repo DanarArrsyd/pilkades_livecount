@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hasil per TPS — Pilkades Live Count</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/nav.css" />
+  <link rel="stylesheet" href="../css/live.css" />
+</head>
+<body>
+  <div class="live-header">
+    <div class="live-header-top">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu"><span></span><span></span><span></span></button>
+      <span class="live-header-brand">Pilkades Live Count</span>
+    </div>
+
+    <div class="eyebrow"><a href="../index.html" style="color: rgba(255,255,255,0.7);">← Live Count</a></div>
+    <h1>Hasil per TPS</h1>
+    <div class="village" id="electionVillage"></div>
+  </div>
+
+  <div class="live-body">
+    <div class="tps-nav-grid" id="tpsNavGrid"></div>
+
+    <div class="tps-detail-card" id="tpsDetail">
+      <div class="tps-detail-head">
+        <span class="num" id="detailTpsNumber">--</span>
+        <span class="badge" id="detailStatus">-</span>
+      </div>
+      <div id="detailRows"></div>
+    </div>
+
+    <div class="updated-at" id="updatedAt" style="margin-top: var(--space-4);">Terakhir diperbarui: —</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/live-tps.js"></script>
+  <script>
+    initNav({
+      active: 'tps',
+      hamburgerTarget: '#hamburgerBtn',
+      links: [
+        { key: 'dashboard', label: 'Dashboard', href: '../index.html' },
+        { key: 'tps', label: 'Hasil per TPS', href: 'tps.html' },
+        { key: 'login', label: 'Admin Login', href: '../login.html' },
+      ],
+    });
+  </script>
+</body>
+</html>

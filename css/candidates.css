@@ -1,0 +1,198 @@
+/* Enterprise navy · Kelola Paslon (reuses tps.css page chrome) */
+
+.candidate-toolbar {
+  margin-bottom: var(--space-5);
+}
+
+.candidate-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.candidate-item {
+  border: 2px solid var(--color-navy);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.candidate-item.inactive {
+  opacity: 0.55;
+}
+
+.candidate-item .photo {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-soft);
+  object-fit: cover;
+  background: var(--color-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-ink-faint);
+}
+
+.candidate-item .num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-ink-faint);
+  text-transform: uppercase;
+}
+
+.candidate-item .names {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.candidate-item .desc {
+  font-size: 12px;
+  color: var(--color-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.candidate-item .item-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.candidate-item .item-actions button {
+  flex: 1;
+  font-size: 12px;
+  padding: var(--space-2);
+}
+
+/* editor form */
+.candidate-form {
+  border: 2px solid var(--color-navy);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  padding: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.candidate-form h3 {
+  font-size: 16px;
+  margin-bottom: var(--space-4);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--space-4);
+  align-items: start;
+  margin-bottom: var(--space-4);
+}
+
+.form-row label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink-muted);
+  padding-top: var(--space-2);
+}
+
+.form-row input[type="text"],
+.form-row input[type="number"],
+.form-row textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  color: var(--color-ink);
+  font-size: 14px;
+}
+
+.form-row textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.name-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.name-field-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.name-field-row input {
+  flex: 1;
+}
+
+.name-field-row button {
+  padding: var(--space-2) var(--space-3);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.add-name-btn {
+  align-self: flex-start;
+  font-size: 12px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.photo-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.photo-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-soft);
+  object-fit: cover;
+  background: var(--color-surface-alt);
+  flex-shrink: 0;
+}
+
+.photo-field-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.checkbox-row input { width: auto; }
+
+.form-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-5);
+}
+
+.form-actions .primary {
+  background: var(--color-navy);
+  color: var(--color-white);
+  border-color: var(--color-navy);
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .form-row label { padding-top: 0; }
+}

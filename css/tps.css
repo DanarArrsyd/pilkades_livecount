@@ -1,0 +1,145 @@
+/* Enterprise navy · shared admin page chrome (tps/logs/export/snapshots) */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.page-header .topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.page-header .wordmark {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-white);
+}
+
+.page-body {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel > * {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.page-sub {
+  color: var(--color-ink-muted);
+  font-size: 13px;
+  margin-bottom: var(--space-5);
+}
+
+.panel {
+  border: 2px solid var(--color-navy);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.tps-table {
+  width: 100%;
+}
+
+.tps-row {
+  display: grid;
+  grid-template-columns: 48px 90px 1fr 70px 70px 70px 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-soft);
+  font-size: 13px;
+}
+
+.tps-row:last-child {
+  border-bottom: none;
+}
+
+.tps-row.head {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--color-navy);
+  border-bottom: none;
+}
+
+.tps-row .num {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tps-row .votes {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.tps-row .votes.over-limit { color: var(--color-danger); font-weight: 700; }
+
+.tps-row .actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.tps-row .actions button {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.empty-state {
+  color: var(--color-ink-faint);
+  font-size: 13px;
+  padding: var(--space-6) 0;
+  text-align: center;
+}
+
+.verified-mark {
+  color: var(--color-success);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.limit-warning {
+  font-size: 11px;
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .tps-row {
+    grid-template-columns: 40px 70px 1fr;
+    row-gap: var(--space-2);
+  }
+  .tps-row .votes { display: none; }
+  .tps-row .actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .tps-row.head { display: none; }
+}

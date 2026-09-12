@@ -1,0 +1,55 @@
+/* Enterprise navy theme — user-directed override, supersedes prior warm/terracotta
+ * theme. See DESIGN.md §0. Arial throughout, soft corners, bordered report boxes,
+ * tinted page canvas (not stark white) so content reads as filled, not empty.
+ */
+:root {
+  --color-navy: #0d1b3e;
+  --color-navy-mid: #16265a;
+  --color-navy-light: #223172;
+
+  --color-bg: #eef0f5;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f4f5f8;
+  --color-border: #0d1b3e;
+  --color-border-soft: #c7cbd6;
+
+  --color-ink: #0d1b3e;
+  --color-ink-muted: #4b5570;
+  --color-ink-faint: #8890a3;
+  --color-white: #ffffff;
+
+  --color-accent: #0d1b3e;
+  --color-accent-ink: #ffffff;
+
+  --color-success: #1e7d3c;
+  --color-warning: #b5790a;
+  --color-danger: #b3261e;
+  --color-locked: #5a6478;
+
+  /* brighter variants for text sitting on the navy topbar/drawer */
+  --color-success-on-navy: #4ade80;
+  --color-warning-on-navy: #fbbf24;
+  --color-danger-on-navy: #f87171;
+
+  --font-display: Arial, Helvetica, sans-serif;
+  --font-body: Arial, Helvetica, sans-serif;
+  --font-mono: Arial, Helvetica, sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 14px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --dur-fast: 100ms;
+  --dur-base: 160ms;
+}

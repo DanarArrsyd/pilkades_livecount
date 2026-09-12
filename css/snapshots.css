@@ -1,0 +1,63 @@
+/* Hallmark · redesign · snapshots (reuses tps.css/logs.css page chrome) */
+
+.snapshot-toolbar {
+  margin-bottom: var(--space-5);
+}
+
+.snapshot-toolbar button {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.snapshot-row {
+  display: grid;
+  grid-template-columns: 170px 90px 90px 90px 1fr;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-soft);
+  font-size: 13px;
+}
+
+.snapshot-row:last-child {
+  border-bottom: none;
+}
+
+.snapshot-row.head {
+  font-size: 11px;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--color-navy);
+  border-bottom: none;
+}
+
+.snapshot-row .time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.snapshot-row .val {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.snapshot-row .dl {
+  text-align: right;
+}
+
+.snapshot-row .dl button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+@media (max-width: 720px) {
+  .snapshot-row {
+    grid-template-columns: 1fr 1fr;
+    row-gap: var(--space-1);
+  }
+  .snapshot-row.head { display: none; }
+  .snapshot-row .dl { grid-column: 1 / -1; text-align: left; }
+}

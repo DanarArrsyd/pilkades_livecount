@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Pilkades Live Count</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <style>
+    html, body { height: 100%; }
+    body {
+      display: flex;
+      min-height: 100vh;
+    }
+    .login-split {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+    .login-brand {
+      flex: 1.1;
+      background: var(--color-navy);
+      color: var(--color-white);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-8);
+    }
+    .login-brand .brand-name {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: var(--space-3);
+    }
+    .login-brand .brand-tagline {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 380px;
+      line-height: 1.6;
+      margin-bottom: var(--space-6);
+    }
+    .login-brand .brand-features {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .login-brand .brand-features div {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .login-brand .brand-features .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success-on-navy);
+      flex-shrink: 0;
+    }
+    .login-form-side {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-6);
+      background: var(--color-bg);
+    }
+    .login-box {
+      width: 100%;
+      max-width: 360px;
+      border: 2px solid var(--color-navy);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--color-surface);
+    }
+    .login-box .mark {
+      background: var(--color-navy);
+      color: var(--color-white);
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: var(--space-4);
+    }
+    .login-box form { padding: var(--space-5); }
+    label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: var(--space-2);
+      font-weight: 700;
+      color: var(--color-ink-muted);
+    }
+    .field { margin-bottom: var(--space-5); }
+    input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-white);
+      color: var(--color-ink);
+      font-size: 15px;
+    }
+    button[type="submit"] {
+      width: 100%;
+      padding: var(--space-3);
+      background: var(--color-navy);
+      border: 1px solid var(--color-navy);
+      border-radius: var(--radius-sm);
+      color: var(--color-white);
+      font-weight: 700;
+      margin-top: var(--space-2);
+    }
+    #error {
+      color: var(--color-danger);
+      font-size: 13px;
+      margin-bottom: var(--space-3);
+      min-height: 16px;
+      font-weight: 700;
+    }
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: var(--space-4);
+      font-size: 12px;
+    }
+    @media (max-width: 720px) {
+      .login-split { flex-direction: column; }
+      .login-brand { flex: none; padding: var(--space-6); }
+      .login-brand .brand-features { display: none; }
+      .login-form-side { flex: none; padding: var(--space-6) var(--space-4); }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-split">
+    <div class="login-brand">
+      <div class="brand-name">Pilkades Live Count</div>
+      <div class="brand-tagline">Sistem rekapitulasi dan pemantauan hasil penghitungan suara pemilihan kepala desa secara real-time.</div>
+      <div class="brand-features">
+        <div><span class="dot"></span> Input suara satu-per-satu, teraudit penuh</div>
+        <div><span class="dot"></span> Rekonsiliasi &amp; kunci per TPS</div>
+        <div><span class="dot"></span> Dashboard publik real-time</div>
+      </div>
+    </div>
+    <div class="login-form-side">
+      <div>
+        <div class="login-box">
+          <div class="mark">Admin Login</div>
+          <form id="loginForm">
+            <div class="field">
+              <label for="email">Email</label>
+              <input type="email" id="email" required autocomplete="username" />
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <input type="password" id="password" required autocomplete="current-password" />
+            </div>
+            <div id="error"></div>
+            <button type="submit" id="submitBtn">Masuk</button>
+          </form>
+        </div>
+        <a class="back-link" href="index.html">← Kembali ke Dashboard Publik</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

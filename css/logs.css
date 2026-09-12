@@ -1,0 +1,88 @@
+/* Hallmark · redesign · activity logs (reuses tps.css page chrome) */
+
+.logs-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.logs-toolbar select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  color: var(--color-ink);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.log-row {
+  display: grid;
+  grid-template-columns: 150px 130px 160px 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-soft);
+  font-size: 13px;
+  align-items: start;
+}
+
+.log-row:last-child {
+  border-bottom: none;
+}
+
+.log-row.head {
+  font-size: 11px;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--color-navy);
+  border-bottom: none;
+}
+
+.log-row .time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-ink-muted);
+}
+
+.log-row .action {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.log-row .entity {
+  color: var(--color-ink-muted);
+  font-size: 12px;
+}
+
+.log-row .details {
+  font-size: 12px;
+  color: var(--color-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.load-more {
+  margin-top: var(--space-5);
+  width: 100%;
+  padding: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.empty-state {
+  color: var(--color-ink-faint);
+  font-size: 13px;
+  padding: var(--space-6) 0;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .log-row {
+    grid-template-columns: 1fr;
+    row-gap: 2px;
+  }
+  .log-row.head { display: none; }
+  .log-row { padding: var(--space-4) var(--space-2); }
+}

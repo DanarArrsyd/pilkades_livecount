@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Export — Pilkades Live Count</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/nav.css" />
+  <link rel="stylesheet" href="../css/tps.css" />
+  <link rel="stylesheet" href="../css/export.css" />
+</head>
+<body>
+  <div class="page-header">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu"><span></span><span></span><span></span></button>
+      <span class="wordmark">Pilkades Live Count</span>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <div class="page-title">Export Hasil</div>
+    <div class="page-sub">Unduh hasil dalam CSV, atau cetak laporan lengkap sebagai PDF.</div>
+
+    <div class="export-grid">
+      <div class="export-card">
+        <h3>Hasil Keseluruhan</h3>
+        <p>Total suara &amp; persentase tiap kandidat, se-election.</p>
+        <button id="exportOverall">Unduh CSV</button>
+      </div>
+      <div class="export-card">
+        <h3>Hasil per TPS</h3>
+        <p>Rincian suara tiap kandidat per TPS, status, dan verifikasi.</p>
+        <button id="exportPerTps">Unduh CSV</button>
+      </div>
+      <div class="export-card">
+        <h3>Log Aktivitas</h3>
+        <p>Seluruh riwayat aksi admin (maks 2000 baris terbaru).</p>
+        <button id="exportLogs">Unduh CSV</button>
+      </div>
+      <div class="export-card">
+        <h3>Laporan Lengkap (PDF)</h3>
+        <p>Cetak / simpan sebagai PDF lewat dialog print browser.</p>
+        <button id="printReport">Cetak Laporan</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="print-report print-only" id="printReport-content"></div>
+
+  <div id="toast" class="hidden" role="status" aria-live="assertive"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/export.js"></script>
+  <script>
+    initNav({ active: 'export', hamburgerTarget: '#hamburgerBtn', links: [
+        { key: 'dashboard', label: 'Dashboard (Publik)', href: '../index.html' },
+        { key: 'input', label: 'Rapid Input', href: 'input.html' },
+        { key: 'tps', label: 'TPS', href: 'tps.html' },
+        { key: 'candidates', label: 'Kelola Paslon', href: 'candidates.html' },
+        { key: 'logs', label: 'Log Aktivitas', href: 'logs.html' },
+        { key: 'export', label: 'Export', href: 'export.html' },
+        { key: 'snapshots', label: 'Snapshot', href: 'snapshots.html' },
+      ] });
+  </script>
+</body>
+</html>

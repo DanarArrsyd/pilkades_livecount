@@ -1,13 +1,18 @@
 /* Enterprise navy · Rapid Input — bordered report-box layout per user sketch */
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-3) var(--space-5);
-  background: var(--color-navy);
-  color: var(--color-white);
+  padding: 10px clamp(var(--space-4), 3vw, 40px);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-ink);
 }
 
 .topbar .topbar-left {
@@ -17,14 +22,18 @@
 }
 
 .topbar .wordmark {
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--color-white);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink);
 }
 
 #connState {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   text-align: right;
 }
 
@@ -39,10 +48,12 @@ body {
 }
 
 .console {
-  max-width: 1100px;
   width: 100%;
+  max-width: 1800px;
   margin: 0 auto;
-  padding: var(--space-5) var(--space-4);
+  padding: clamp(var(--space-4), 2.4vw, 28px) clamp(var(--space-4), 3vw, 40px);
+  padding-left: max(clamp(var(--space-4), 3vw, 40px), env(safe-area-inset-left));
+  padding-right: max(clamp(var(--space-4), 3vw, 40px), env(safe-area-inset-right));
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -50,16 +61,34 @@ body {
 
 .report-grid {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: var(--space-5);
+  grid-template-columns: clamp(220px, 22vw, 300px) minmax(0, 1fr);
+  gap: clamp(var(--space-3), 2vw, 24px);
   align-items: stretch;
   flex: 1;
 }
 
-@media (max-width: 640px) {
-  .report-grid {
-    grid-template-columns: 1fr;
+/* Tablet and phone: the tally is the job, so the TPS/total boxes go side by side
+   above it instead of eating a whole column. */
+@media (max-width: 900px) {
+  .report-grid { grid-template-columns: minmax(0, 1fr); }
+
+  .left-col {
+    flex-direction: row;
+    gap: var(--space-3);
   }
+
+  .left-col .report-box,
+  .left-col .report-box:last-child {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .report-box-value { font-size: clamp(30px, 7vw, 40px); }
+}
+
+@media (max-width: 520px) {
+  .left-col { flex-direction: column; }
+  .left-col .report-box { margin-bottom: var(--space-3); }
 }
 
 .left-col {
@@ -68,8 +97,9 @@ body {
 }
 
 .report-box {
-  border: 2px solid var(--color-navy);
-  border-radius: var(--radius);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
   margin-bottom: var(--space-4);
   background: var(--color-surface);
@@ -90,31 +120,34 @@ body {
 }
 
 .report-box-header {
-  background: var(--color-navy);
-  color: var(--color-white);
-  text-align: center;
+  background: transparent;
+  color: var(--color-ink-muted);
+  text-align: left;
   font-weight: 700;
-  padding: var(--space-3);
+  padding: var(--space-4) var(--space-4) 0;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 13px;
+  letter-spacing: 0.16em;
+  font-size: 10px;
 }
 
 .report-box-value {
-  text-align: center;
-  font-size: 56px;
-  font-weight: 700;
-  padding: var(--space-4) var(--space-2);
+  text-align: left;
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  padding: var(--space-1) var(--space-4) var(--space-2);
   overflow-wrap: anywhere;
 }
 
 .report-box-status {
-  text-align: center;
-  padding-bottom: var(--space-2);
+  text-align: left;
+  padding: 0 var(--space-4) var(--space-4);
 }
 
 .tps-switch-row {
-  padding: 0 var(--space-2) var(--space-2);
+  padding: 0 var(--space-4) var(--space-4);
 }
 
 .tps-switch-row input {
@@ -129,8 +162,9 @@ body {
 }
 
 .right-col {
-  border: 2px solid var(--color-navy);
-  border-radius: var(--radius);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   background: var(--color-surface);
   padding: var(--space-5);
 }
@@ -220,7 +254,8 @@ body {
 .ledger-row.invalid .name { color: var(--color-ink-muted); }
 
 .ledger-row .count {
-  font-weight: 700;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
   font-size: 18px;
   width: 40px;
   text-align: right;
@@ -286,13 +321,13 @@ body {
 }
 
 .recent-tps-label {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 600;
   margin-top: var(--space-4);
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-2);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-ink-muted);
+  letter-spacing: 0.16em;
+  color: var(--color-ink-faint);
 }
 
 .recent-tps {
@@ -321,11 +356,11 @@ body {
 }
 
 .last-input-label {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-ink-muted);
+  letter-spacing: 0.16em;
+  color: var(--color-ink-faint);
 }
 
 .undo-hint {
@@ -341,7 +376,9 @@ body {
   left: 50%;
   transform: translateX(-50%);
   background: var(--color-white);
-  border: 2px solid var(--color-navy);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
   padding: var(--space-3) var(--space-4);
   font-size: 13px;
   max-width: calc(100vw - var(--space-6));
@@ -351,14 +388,15 @@ body {
 #toast.success { border-color: var(--color-success); color: var(--color-success); }
 
 .shortcut-footer {
-  background: var(--color-navy);
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--color-surface-alt);
+  color: var(--color-ink-muted);
+  border-top: 1px solid var(--color-ink);
   padding: var(--space-3) var(--space-5);
   display: flex;
   gap: var(--space-5);
   flex-wrap: wrap;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .shortcut-footer .key {
@@ -368,17 +406,26 @@ body {
 }
 
 .shortcut-footer kbd {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-sm);
   padding: 2px 7px;
   font-family: inherit;
   font-weight: 700;
-  font-size: 11px;
+  font-size: 10px;
+  color: var(--color-ink);
+}
+
+.shortcut-footer {
+  padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
 }
 
 @media (max-width: 480px) {
-  .report-box-value { font-size: 44px; }
   .console { padding: var(--space-4) var(--space-3); }
-  .shortcut-footer { gap: var(--space-3); font-size: 11px; }
+  .shortcut-footer { gap: var(--space-3); font-size: 10px; }
+  .topbar { padding: 8px var(--space-3); }
+  .topbar .wordmark { font-size: 11px; }
+  #connState { font-size: 9px; max-width: 40vw; }
+  .ledger-row { font-size: 16px; }      /* thumb-sized rows for tap input */
+  .ledger-row .count { font-size: 20px; width: 46px; }
 }

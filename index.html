@@ -2,81 +2,76 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pilkades Live Count</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>E-Voting Pilkades</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
-  <meta name="theme-color" content="#0d1b3e" />
+  <meta name="theme-color" content="#111111" />
+  <link rel="preconnect" href="https://srlsyxlkcgscbngbrqzw.supabase.co" crossorigin />
+  <link rel="dns-prefetch" href="https://srlsyxlkcgscbngbrqzw.supabase.co" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Pilkades" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/nav.css" />
   <link rel="stylesheet" href="css/live.css" />
 </head>
-<body>
-  <div class="live-header">
-    <div class="live-header-top">
-      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu"><span></span><span></span><span></span></button>
-      <span class="live-header-brand">Pilkades Live Count</span>
-    </div>
-
-    <div class="eyebrow" id="electionEyebrow">Live Count</div>
-    <h1 id="electionName">Memuat...</h1>
-    <div class="village" id="electionVillage"></div>
-
-    <div class="result-status" id="resultStatus">
-      <span class="dot"></span>
-      <span>HASIL SEMENTARA</span>
-    </div>
-
-    <div class="stat-row">
-      <div class="stat-tile">
-        <div class="label">TPS Selesai</div>
-        <div class="value" id="statTpsDone">0 / 40</div>
-      </div>
-      <div class="stat-tile">
-        <div class="label">Suara Sah</div>
-        <div class="value" id="statValid">0</div>
-      </div>
-      <div class="stat-tile">
-        <div class="label">Tidak Sah</div>
-        <div class="value" id="statInvalid">0</div>
-      </div>
-    </div>
+<body class="report-body">
+  <div class="topbar-mini">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu"><span></span><span></span><span></span></button>
+    <span class="topbar-mini-title">E-Voting Pilkades</span>
   </div>
 
-  <div class="live-body">
-    <div class="section-title">Perolehan Suara</div>
-    <div class="candidate-grid" id="candidateGrid"></div>
-
-    <div class="section-title">Grafik Perbandingan</div>
-    <div class="chart-wrap">
-      <canvas id="overallChart"></canvas>
+  <div class="report-page">
+    <div class="report-header">
+      <div class="report-header-left">
+        <img class="report-logo" src="assets/images/logo-header.png" alt="Logo Kabupaten Bekasi" />
+        <div class="report-region">
+          <div class="region-kabupaten">Kabupaten Bekasi</div>
+          <div class="region-kecamatan">Tambun Selatan</div>
+          <div class="region-desa" id="electionVillage">Lambangjaya</div>
+          <div class="region-subtitle" id="electionName">Memuat...</div>
+        </div>
+      </div>
+      <div class="report-header-right">
+        <dl class="stat-list">
+          <div class="stat-line"><dt>TPS Selesai</dt><dd id="statTpsDone">0 TPS</dd></div>
+          <div class="stat-line"><dt>Suara Sah</dt><dd id="statValid">0 SAH</dd></div>
+          <div class="stat-line"><dt>Suara Tidak Sah</dt><dd id="statInvalid">0 TIDAK SAH</dd></div>
+        </dl>
+        <div class="live-pill" id="resultStatus"><span class="dot"></span><span>Live Count</span></div>
+      </div>
     </div>
 
-    <div class="section-title">Progres TPS</div>
-    <div class="tps-progress-grid" id="tpsProgressGrid"></div>
-    <div class="legend">
-      <span><span class="swatch" style="background: var(--color-success)"></span> Selesai / Terkunci</span>
-      <span><span class="swatch" style="background: var(--color-warning)"></span> Menghitung</span>
-      <span><span class="swatch" style="background: var(--color-ink-faint)"></span> Belum mulai / jeda</span>
+    <div class="report-section-title">Hasil Perolehan Suara</div>
+    <div class="candidate-row" id="candidateGrid"></div>
+
+    <div class="report-section-title">Grafik Persentase</div>
+    <div class="chart-box">
+      <div class="chart-box-title">Grafik Persentase Perolehan Suara</div>
+      <div class="chart-canvas-wrap"><canvas id="overallChart"></canvas></div>
     </div>
 
-    <div class="section-title">Hasil per TPS</div>
-    <div class="tps-table-wrap">
-      <table class="tps-table" id="tpsTable">
+    <div class="report-section-title">Tabel Hasil per TPS</div>
+    <div class="report-table-wrap">
+      <table class="report-table" id="tpsTable">
         <thead>
           <tr id="tpsTableHeadRow"></tr>
         </thead>
         <tbody id="tpsTableBody"></tbody>
       </table>
     </div>
-    <p style="font-size: 12px; color: var(--color-ink-muted); margin-top: var(--space-2);">
-      <a href="live/tps.html">Lihat detail tiap TPS →</a>
-    </p>
+    <p class="report-table-link"><a href="live/tps.html">Lihat detail tiap TPS →</a></p>
 
-    <div class="disclaimer">
-      Data pada sistem merupakan rekapitulasi hasil input penghitungan TPS. Penetapan hasil resmi mengikuti ketentuan panitia pemilihan.
-      <br />
-      <span class="updated-at" id="updatedAt">Terakhir diperbarui: —</span>
+    <div class="report-footer">
+      <div class="report-footer-title">Sistem Pemungutan Suara Elektronik</div>
+      <div class="report-footer-row">
+        <span>Dikelola oleh Eka Danar Arrasyid</span>
+        <span id="updatedAt">Terakhir diperbarui: —</span>
+      </div>
     </div>
   </div>
 
@@ -93,9 +88,9 @@
       links: [
         { key: 'dashboard', label: 'Dashboard', href: 'index.html' },
         { key: 'tps', label: 'Hasil per TPS', href: 'live/tps.html' },
-        { key: 'login', label: 'Admin Login', href: 'login.html' },
       ],
     });
   </script>
+  <script src="js/pwa.js"></script>
 </body>
 </html>

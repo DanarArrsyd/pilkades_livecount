@@ -2,10 +2,18 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Login — Pilkades Live Count</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
-  <meta name="theme-color" content="#0d1b3e" />
+  <meta name="theme-color" content="#111111" />
+  <link rel="preconnect" href="https://srlsyxlkcgscbngbrqzw.supabase.co" crossorigin />
+  <link rel="dns-prefetch" href="https://srlsyxlkcgscbngbrqzw.supabase.co" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Pilkades" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/base.css" />
   <style>
@@ -21,23 +29,25 @@
     }
     .login-brand {
       flex: 1.1;
-      background: var(--color-navy);
-      color: var(--color-white);
+      background: var(--color-surface-alt);
+      color: var(--color-ink);
+      border-right: 1px solid var(--color-ink);
       display: flex;
       flex-direction: column;
       justify-content: center;
       padding: var(--space-8);
     }
     .login-brand .brand-name {
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 700;
+      letter-spacing: -0.02em;
       margin-bottom: var(--space-3);
     }
     .login-brand .brand-tagline {
-      font-size: 15px;
-      color: rgba(255, 255, 255, 0.75);
+      font-size: 14px;
+      color: var(--color-ink-muted);
       max-width: 380px;
-      line-height: 1.6;
+      line-height: 1.65;
       margin-bottom: var(--space-6);
     }
     .login-brand .brand-features {
@@ -49,14 +59,15 @@
       display: flex;
       align-items: center;
       gap: var(--space-3);
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.85);
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      color: var(--color-ink-muted);
     }
     .login-brand .brand-features .dot {
-      width: 8px;
-      height: 8px;
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
-      background: var(--color-success-on-navy);
+      background: var(--color-ink);
       flex-shrink: 0;
     }
     .login-form-side {
@@ -70,47 +81,61 @@
     .login-box {
       width: 100%;
       max-width: 360px;
-      border: 2px solid var(--color-navy);
+      border: 1px solid var(--color-ink);
       border-radius: var(--radius);
       overflow: hidden;
       background: var(--color-surface);
     }
     .login-box .mark {
-      background: var(--color-navy);
-      color: var(--color-white);
-      font-size: 14px;
-      font-weight: 700;
+      background: var(--color-surface-alt);
+      color: var(--color-ink-muted);
+      border-bottom: 1px solid var(--color-ink);
+      font-size: 10px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: var(--space-4);
+      letter-spacing: 0.16em;
+      padding: 12px var(--space-4);
     }
     .login-box form { padding: var(--space-5); }
     label {
       display: block;
-      font-size: 12px;
+      font-size: 10px;
       margin-bottom: var(--space-2);
-      font-weight: 700;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
       color: var(--color-ink-muted);
     }
     .field { margin-bottom: var(--space-5); }
     input[type="email"], input[type="password"] {
       width: 100%;
-      padding: var(--space-3);
-      border: 1px solid var(--color-border);
+      padding: 11px var(--space-3);
+      border: 1px solid var(--color-border-soft);
       border-radius: var(--radius-sm);
       background: var(--color-white);
       color: var(--color-ink);
-      font-size: 15px;
+      font-size: 14px;
+      transition: border-color 140ms var(--ease-out);
+    }
+    input[type="email"]:focus, input[type="password"]:focus {
+      border-color: var(--color-ink);
+      outline: none;
     }
     button[type="submit"] {
       width: 100%;
-      padding: var(--space-3);
-      background: var(--color-navy);
-      border: 1px solid var(--color-navy);
+      padding: 12px var(--space-3);
+      background: var(--color-ink);
+      border: 1px solid var(--color-ink);
       border-radius: var(--radius-sm);
       color: var(--color-white);
+      font-size: 12px;
       font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       margin-top: var(--space-2);
+    }
+    button[type="submit"]:hover:not(:disabled) {
+      background: var(--color-navy-mid);
     }
     #error {
       color: var(--color-danger);
@@ -169,5 +194,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/pwa.js"></script>
 </body>
 </html>

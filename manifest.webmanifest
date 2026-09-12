@@ -1,0 +1,52 @@
+{
+  "name": "E-Voting Pilkades — Live Count",
+  "short_name": "Pilkades",
+  "description": "Rekapitulasi dan pemantauan hasil penghitungan suara pemilihan kepala desa secara real-time.",
+  "lang": "id",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "categories": ["government", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "assets/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Input Suara",
+      "short_name": "Input",
+      "url": "./admin/input.html"
+    },
+    {
+      "name": "Hasil per TPS",
+      "short_name": "Per TPS",
+      "url": "./live/tps.html"
+    }
+  ]
+}

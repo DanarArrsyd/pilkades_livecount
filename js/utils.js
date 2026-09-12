@@ -59,24 +59,43 @@ function entityLabelId(entity) {
 
 // Animates a number's textContent from its current value to `to` — makes live
 // updates feel real instead of the count just snapping. Respects reduced-motion.
+//
+// Rapid input retargets a running animation instead of starting a second one:
+// stacked rAF loops on the same node fight over textContent and burn a frame
+// each, which is what made fast counting feel laggy.
+const NUMBER_ANIMATIONS = new WeakMap();
+const PREFERS_REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
+
 function animateNumber(el, to, duration) {
   if (!el) return;
-  const from = Number(el.textContent.replace(/[^\d.-]/g, '')) || 0;
-  if (from === to) { el.textContent = to; return; }
 
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) { el.textContent = to; return; }
+  const running = NUMBER_ANIMATIONS.get(el);
+  const from = running ? running.current : (Number(el.textContent.replace(/[^\d.-]/g, '')) || 0);
+
+  if (running) cancelAnimationFrame(running.frame);
+
+  if (from === to || PREFERS_REDUCED_MOTION.matches) {
+    NUMBER_ANIMATIONS.delete(el);
+    el.textContent = to;
+    return;
+  }
 
   const dur = duration || 500;
   const start = performance.now();
+  const anim = { current: from, frame: 0 };
+  NUMBER_ANIMATIONS.set(el, anim);
 
   function tick(now) {
     const t = Math.min((now - start) / dur, 1);
     const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
-    const value = Math.round(from + (to - from) * eased);
-    el.textContent = value;
-    if (t < 1) requestAnimationFrame(tick);
-    else el.textContent = to;
+    anim.current = from + (to - from) * eased;
+    el.textContent = Math.round(anim.current);
+    if (t < 1) {
+      anim.frame = requestAnimationFrame(tick);
+    } else {
+      NUMBER_ANIMATIONS.delete(el);
+      el.textContent = to;
+    }
   }
-  requestAnimationFrame(tick);
+  anim.frame = requestAnimationFrame(tick);
 }

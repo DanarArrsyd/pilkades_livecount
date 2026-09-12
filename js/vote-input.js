@@ -15,6 +15,7 @@
     switchToken: 0,       // guards against out-of-order TPS switch responses
     queue: [],            // pending vote items not yet confirmed by the server
     flushing: false,
+    snapshots: new Map(), // tps_number -> {tps, summary} from the last server read
   };
 
   const el = {
@@ -71,33 +72,37 @@
     el.connState.className = 'conn-online';
   }
 
-  function renderCandidateGrid() {
-    el.candidateGrid.innerHTML = '';
-    state.candidates.forEach((c) => {
-      const btn = document.createElement('button');
-      btn.className = 'ledger-row';
-      btn.dataset.candidateId = c.id;
-      btn.dataset.candidateNumber = c.candidate_number;
-      btn.innerHTML = `
-        <span class="num">${c.candidate_number}</span>
-        <span class="name">${escapeHtml(c.name)}</span>
-        <span class="count" id="count-${c.id}">0</span>
-        <span class="row-progress"><span class="row-progress-fill" id="bar-${c.id}"></span></span>
-      `;
-      btn.addEventListener('click', () => castVote(c.candidate_number));
-      el.candidateGrid.appendChild(btn);
-    });
+  // Row nodes are looked up once here; the hot path (every keypress) then writes
+  // straight to them instead of re-querying the DOM for each candidate.
+  const rows = new Map(); // summary key -> {btn, count, bar}
 
-    const invalidBtn = document.createElement('button');
-    invalidBtn.className = 'ledger-row invalid';
-    invalidBtn.innerHTML = `
-      <span class="num">0</span>
-      <span class="name">Tidak Sah</span>
-      <span class="count" id="count-invalid">0</span>
-      <span class="row-progress"><span class="row-progress-fill" id="bar-invalid"></span></span>
-    `;
-    invalidBtn.addEventListener('click', () => castVote(0));
-    el.candidateGrid.appendChild(invalidBtn);
+  function renderCandidateGrid() {
+    const frag = document.createDocumentFragment();
+    rows.clear();
+
+    const build = (key, number, label, extraClass) => {
+      const btn = document.createElement('button');
+      btn.className = 'ledger-row' + (extraClass ? ' ' + extraClass : '');
+      btn.dataset.candidateNumber = number;
+      btn.innerHTML = `
+        <span class="num">${number}</span>
+        <span class="name">${escapeHtml(label)}</span>
+        <span class="count">0</span>
+        <span class="row-progress"><span class="row-progress-fill"></span></span>
+      `;
+      btn.addEventListener('click', () => castVote(number));
+      frag.appendChild(btn);
+      rows.set(key, {
+        btn,
+        count: btn.querySelector('.count'),
+        bar: btn.querySelector('.row-progress-fill'),
+      });
+    };
+
+    state.candidates.forEach((c) => build(c.id, c.candidate_number, c.name));
+    build('invalid', 0, 'Tidak Sah', 'invalid');
+
+    el.candidateGrid.replaceChildren(frag);
   }
 
   function escapeHtml(str) {
@@ -106,28 +111,27 @@
     return d.innerHTML;
   }
 
-  function renderSummary() {
-    let total = 0;
-    const counts = {};
-    state.candidates.forEach((c) => {
-      const count = state.summary[c.id] || 0;
-      counts[c.id] = count;
-      total += count;
-    });
-    const invalidCount = state.summary.invalid || 0;
-    counts.invalid = invalidCount;
-    total += invalidCount;
+  // Coalesced to one write per frame: holding a key down fires far faster than the
+  // screen refreshes, and only the last state of a frame is ever visible.
+  let summaryFrame = 0;
 
-    state.candidates.forEach((c) => {
-      const countEl = document.getElementById(`count-${c.id}`);
-      if (countEl) animateNumber(countEl, counts[c.id], 400);
-      const barEl = document.getElementById(`bar-${c.id}`);
-      if (barEl) barEl.style.width = (total ? (counts[c.id] / total) * 100 : 0) + '%';
+  function renderSummary() {
+    if (summaryFrame) return;
+    summaryFrame = requestAnimationFrame(() => {
+      summaryFrame = 0;
+      paintSummary();
     });
-    const invalidEl = document.getElementById('count-invalid');
-    if (invalidEl) animateNumber(invalidEl, invalidCount, 400);
-    const invalidBar = document.getElementById('bar-invalid');
-    if (invalidBar) invalidBar.style.width = (total ? (invalidCount / total) * 100 : 0) + '%';
+  }
+
+  function paintSummary() {
+    let total = 0;
+    rows.forEach((_, key) => { total += state.summary[key] || 0; });
+
+    rows.forEach((row, key) => {
+      const count = state.summary[key] || 0;
+      animateNumber(row.count, count, 400);
+      row.bar.style.width = (total ? (count / total) * 100 : 0) + '%';
+    });
 
     animateNumber(el.tpsTotal, total, 400);
   }
@@ -191,20 +195,36 @@
     localStorage.setItem('recentTps', JSON.stringify(state.recentTps));
   }
 
-  // Single round trip: tps row + summary together. Shows the target TPS number
-  // immediately (optimistic) so switching never feels like it's waiting on the network.
+  // Single round trip: tps row + summary together. A TPS visited before repaints
+  // from cache on the same frame and the network response just reconciles it, so
+  // hopping between TPS never blocks on latency.
   async function switchTps(tpsNumber) {
     const token = ++state.switchToken;
+    const cached = state.snapshots.get(tpsNumber);
 
-    state.activeTps = { tps_number: tpsNumber, id: null, status: state.activeTps?.status || 'not_started' };
-    renderActiveTps(true);
-    state.summary = {};
-    renderSummary();
+    if (cached) {
+      state.activeTps = cached.tps;
+      state.localHistory = [];
+      applySummaryRows(cached.summary);
+      renderActiveTps(false);
+      applyQueuedDeltas(cached.tps.id);
+    } else {
+      state.activeTps = { tps_number: tpsNumber, id: null, status: state.activeTps?.status || 'not_started' };
+      renderActiveTps(true);
+      state.summary = {};
+      renderSummary();
+    }
+
+    localStorage.setItem('activeTpsNumber', String(tpsNumber));
+    pushRecentTps(tpsNumber);
+    renderRecentTps();
 
     if (!navigator.onLine) {
-      showToast('Offline — tidak bisa muat data TPS lain sekarang.', 'error');
-      state.activeTps = null;
-      renderActiveTps();
+      if (!cached) {
+        showToast('Offline — tidak bisa muat data TPS lain sekarang.', 'error');
+        state.activeTps = null;
+        renderActiveTps();
+      }
       return;
     }
 
@@ -216,18 +236,17 @@
     if (token !== state.switchToken) return; // a newer switch already superseded this one
 
     if (error || !data || !data.tps) {
+      if (cached) return; // keep showing the cached tally rather than blanking the console
       showToast(`TPS ${tpsNumber} tidak ditemukan.`, 'error');
       state.activeTps = null;
       renderActiveTps();
       return;
     }
 
+    state.snapshots.set(tpsNumber, { tps: data.tps, summary: data.summary });
     state.activeTps = data.tps;
-    localStorage.setItem('activeTpsNumber', String(tpsNumber));
-    pushRecentTps(tpsNumber);
     state.localHistory = [];
     renderActiveTps(false);
-    renderRecentTps();
     applySummaryRows(data.summary);
     applyQueuedDeltas(data.tps.id);
   }
@@ -344,6 +363,9 @@
     el.lastInput.textContent = `UNDO — ${label} — TPS ${padTps(state.activeTps.tps_number)} — ${formatTime(new Date())}`;
     showToast('Undo berhasil.', 'success');
 
+    const cachedAfterUndo = state.snapshots.get(state.activeTps.tps_number);
+    if (cachedAfterUndo) cachedAfterUndo.summary = data.summary;
+
     if (state.activeTps && state.activeTps.id === tpsIdAtRequest) {
       applySummaryRows(data.summary);
       applyQueuedDeltas(tpsIdAtRequest);
@@ -391,6 +413,12 @@
       state.queue.shift();
       persistQueue();
 
+      const cached = state.snapshots.get(item.tpsNumber);
+      if (cached) {
+        cached.summary = result.data.summary;
+        cached.tps.status = result.data.tps_status;
+      }
+
       if (state.activeTps && state.activeTps.id === item.tpsId) {
         state.activeTps.status = result.data.tps_status;
         renderActiveTps(false);
@@ -403,14 +431,17 @@
     updateConnState();
   }
 
+  const flashTimers = new Map();
+
   function flashButton(candidateNumber) {
-    const selector = candidateNumber === 0
-      ? '.ledger-row.invalid'
-      : `.ledger-row[data-candidate-number="${candidateNumber}"]`;
-    const btn = el.candidateGrid.querySelector(selector);
-    if (!btn) return;
-    btn.classList.add('flash');
-    setTimeout(() => btn.classList.remove('flash'), 150);
+    const key = candidateNumber === 0
+      ? 'invalid'
+      : (state.candidates.find((c) => c.candidate_number === candidateNumber) || {}).id;
+    const row = rows.get(key);
+    if (!row) return;
+    row.btn.classList.add('flash');
+    clearTimeout(flashTimers.get(key));
+    flashTimers.set(key, setTimeout(() => row.btn.classList.remove('flash'), 150));
   }
 
   function handleKeydown(e) {

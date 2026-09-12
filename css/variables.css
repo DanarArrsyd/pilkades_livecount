@@ -2,34 +2,37 @@
  * theme. See DESIGN.md §0. Arial throughout, soft corners, bordered report boxes,
  * tinted page canvas (not stark white) so content reads as filled, not empty.
  */
+/* Paper-and-ink report system: near-black ink on paper white, hairline rules,
+ * square corners. The --color-navy names are kept because every page references
+ * them; they now carry the ink value instead of the old navy.
+ */
 :root {
-  --color-navy: #0d1b3e;
-  --color-navy-mid: #16265a;
-  --color-navy-light: #223172;
+  --color-navy: #111111;
+  --color-navy-mid: #2b2b2b;
+  --color-navy-light: #3d3d3d;
 
-  --color-bg: #eef0f5;
+  --color-bg: #ffffff;
   --color-surface: #ffffff;
-  --color-surface-alt: #f4f5f8;
-  --color-border: #0d1b3e;
-  --color-border-soft: #c7cbd6;
+  --color-surface-alt: #f7f7f5;
+  --color-border: #111111;
+  --color-border-soft: #d8d8d4;
 
-  --color-ink: #0d1b3e;
-  --color-ink-muted: #4b5570;
-  --color-ink-faint: #8890a3;
+  --color-ink: #111111;
+  --color-ink-muted: #4a4a4a;
+  --color-ink-faint: #8a8a86;
   --color-white: #ffffff;
 
-  --color-accent: #0d1b3e;
+  --color-accent: #111111;
   --color-accent-ink: #ffffff;
 
-  --color-success: #1e7d3c;
+  --color-success: #2f7a36;
   --color-warning: #b5790a;
-  --color-danger: #b3261e;
-  --color-locked: #5a6478;
+  --color-danger: #c1121f;
+  --color-locked: #8a8a86;
 
-  /* brighter variants for text sitting on the navy topbar/drawer */
-  --color-success-on-navy: #4ade80;
-  --color-warning-on-navy: #fbbf24;
-  --color-danger-on-navy: #f87171;
+  --color-success-on-navy: #2f7a36;
+  --color-warning-on-navy: #b5790a;
+  --color-danger-on-navy: #c1121f;
 
   --font-display: Arial, Helvetica, sans-serif;
   --font-body: Arial, Helvetica, sans-serif;
@@ -44,12 +47,18 @@
   --space-7: 48px;
   --space-8: 64px;
 
-  --radius-sm: 4px;
-  --radius: 8px;
-  --radius-lg: 14px;
+  --radius-sm: 2px;
+  --radius: 2px;
+  --radius-lg: 3px;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --dur-fast: 100ms;
   --dur-base: 160ms;
+
+  /* Flat by default — depth only where something genuinely floats. */
+  --shadow-sm: none;
+  --shadow-md: 0 14px 32px -18px rgba(0, 0, 0, 0.5);
+  --color-accent-soft: #f0f0ee;
+  --color-navy-soft: #f0f0ee;
 }

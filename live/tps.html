@@ -2,39 +2,82 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Hasil per TPS — Pilkades Live Count</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
-  <meta name="theme-color" content="#0d1b3e" />
+  <meta name="theme-color" content="#111111" />
+  <link rel="preconnect" href="https://srlsyxlkcgscbngbrqzw.supabase.co" crossorigin />
+  <link rel="dns-prefetch" href="https://srlsyxlkcgscbngbrqzw.supabase.co" />
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Pilkades" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="stylesheet" href="../css/variables.css" />
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/nav.css" />
   <link rel="stylesheet" href="../css/live.css" />
 </head>
-<body>
-  <div class="live-header">
-    <div class="live-header-top">
-      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu"><span></span><span></span><span></span></button>
-      <span class="live-header-brand">Pilkades Live Count</span>
-    </div>
-
-    <div class="eyebrow"><a href="../index.html" style="color: rgba(255,255,255,0.7);">← Live Count</a></div>
-    <h1>Hasil per TPS</h1>
-    <div class="village" id="electionVillage"></div>
+<body class="report-body">
+  <div class="topbar-mini">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu"><span></span><span></span><span></span></button>
+    <span class="topbar-mini-title">E-Voting Pilkades</span>
   </div>
 
-  <div class="live-body">
-    <div class="tps-nav-grid" id="tpsNavGrid"></div>
-
-    <div class="tps-detail-card" id="tpsDetail">
-      <div class="tps-detail-head">
-        <span class="num" id="detailTpsNumber">--</span>
-        <span class="badge" id="detailStatus">-</span>
+  <div class="report-page">
+    <div class="report-header">
+      <div class="report-header-left">
+        <img class="report-logo" src="../assets/images/logo-header.png" alt="Logo Kabupaten Bekasi" />
+        <div class="report-region">
+          <div class="region-kabupaten">Kabupaten Bekasi</div>
+          <div class="region-kecamatan">Tambun Selatan</div>
+          <div class="region-desa" id="electionVillage">Lambangjaya</div>
+          <div class="region-subtitle" id="electionName">Memuat...</div>
+        </div>
       </div>
-      <div id="detailRows"></div>
+      <div class="report-header-right">
+        <dl class="stat-list">
+          <div class="stat-line"><dt>TPS Selesai</dt><dd id="statTpsDone">0 TPS</dd></div>
+          <div class="stat-line"><dt>Suara Sah</dt><dd id="statValid">0 SAH</dd></div>
+          <div class="stat-line"><dt>Suara Tidak Sah</dt><dd id="statInvalid">0 TIDAK SAH</dd></div>
+        </dl>
+        <div class="live-pill" id="resultStatus"><span class="dot"></span><span>Live Count</span></div>
+      </div>
     </div>
 
-    <div class="updated-at" id="updatedAt" style="margin-top: var(--space-4);">Terakhir diperbarui: —</div>
+    <div class="tps-layout">
+      <aside class="tps-picker">
+        <div class="report-section-title">Nomor TPS</div>
+        <div class="tps-number-grid" id="tpsNavGrid"></div>
+      </aside>
+
+      <section class="tps-panel">
+        <div class="report-section-title" id="tpsHeading">TPS No. —</div>
+        <div class="candidate-row" id="candidateGrid"></div>
+
+        <div class="tps-detail-wrap">
+          <table class="tps-detail-table">
+            <thead>
+              <tr>
+                <th id="detailTableTitle">TPS —</th>
+                <th>Suara</th>
+                <th>Persentase</th>
+              </tr>
+            </thead>
+            <tbody id="detailRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="report-footer">
+      <div class="report-footer-title">Sistem Pemungutan Suara Elektronik</div>
+      <div class="report-footer-row">
+        <span>Dikelola oleh Eka Danar Arrasyid</span>
+        <span id="updatedAt">Terakhir diperbarui: —</span>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -49,9 +92,9 @@
       links: [
         { key: 'dashboard', label: 'Dashboard', href: '../index.html' },
         { key: 'tps', label: 'Hasil per TPS', href: 'tps.html' },
-        { key: 'login', label: 'Admin Login', href: '../login.html' },
       ],
     });
   </script>
+  <script src="../js/pwa.js"></script>
 </body>
 </html>

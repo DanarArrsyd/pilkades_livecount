@@ -10,8 +10,30 @@
     chart: null,
   };
 
+  const CANDIDATE_COLORS = ['#c1121f', '#14213d', '#7ea653', '#d38b2c', '#e3d04a'];
+  const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Numbers settle into place instead of snapping — the only motion on the page
+  // besides the chart, so it reads as a live instrument, not an animated ad.
+  function animateNumber(node, to, format) {
+    const from = Number(node.dataset.value || 0);
+    node.dataset.value = String(to);
+    if (REDUCED_MOTION || from === to) {
+      node.textContent = format(to);
+      return;
+    }
+    const start = performance.now();
+    const duration = 520;
+    function frame(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      node.textContent = format(from + (to - from) * eased);
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
   const el = {
-    eyebrow: document.getElementById('electionEyebrow'),
     name: document.getElementById('electionName'),
     village: document.getElementById('electionVillage'),
     resultStatus: document.getElementById('resultStatus'),
@@ -19,7 +41,6 @@
     statValid: document.getElementById('statValid'),
     statInvalid: document.getElementById('statInvalid'),
     candidateGrid: document.getElementById('candidateGrid'),
-    tpsProgressGrid: document.getElementById('tpsProgressGrid'),
     tpsTableHeadRow: document.getElementById('tpsTableHeadRow'),
     tpsTableBody: document.getElementById('tpsTableBody'),
     updatedAt: document.getElementById('updatedAt'),
@@ -41,73 +62,94 @@
     const done = overview.filter((r) => r.status === 'locked' || r.status === 'completed').length;
     const allLocked = total > 0 && overview.every((r) => r.status === 'locked');
 
-    el.statTpsDone.textContent = `${done} / ${total}`;
+    el.statTpsDone.textContent = `${done} TPS`;
 
     const totalValid = overview.reduce((s, r) => s + Number(r.valid_votes), 0);
     const totalInvalid = overview.reduce((s, r) => s + Number(r.invalid_votes), 0);
-    animateNumber(el.statValid, totalValid, 600);
-    animateNumber(el.statInvalid, totalInvalid, 600);
+    el.statValid.textContent = `${totalValid.toLocaleString('id-ID')} SAH`;
+    el.statInvalid.textContent = `${totalInvalid.toLocaleString('id-ID')} TIDAK SAH`;
 
-    if (allLocked) {
-      el.resultStatus.classList.add('final');
-      el.resultStatus.querySelector('span:last-child').textContent = `PENGHITUNGAN SELESAI · ${total} / ${total} TPS`;
-    } else {
-      el.resultStatus.classList.remove('final');
-      el.resultStatus.querySelector('span:last-child').textContent = 'HASIL SEMENTARA';
-    }
-    el.resultStatus.classList.toggle('live', !allLocked);
+    el.resultStatus.classList.toggle('final', allLocked);
+    el.resultStatus.querySelector('span:last-child').textContent = allLocked ? 'Selesai' : 'Live Count';
 
     return { totalValid, totalInvalid };
   }
 
   function renderCandidates(overall, totalValid) {
-    const ranked = [...overall].sort((a, b) => b.vote_count - a.vote_count);
-    const rankOf = {};
-    ranked.forEach((c, i) => { rankOf[c.candidate_id] = i + 1; });
-
     if (!state.candidateCardsBuilt) {
       el.candidateGrid.innerHTML = overall.map((c) => {
         const candidateMeta = state.candidates.find((x) => x.id === c.candidate_id) || {};
         const photo = candidateMeta.photo_url
           ? `<img src="${escapeHtml(candidateMeta.photo_url)}" alt="" />`
-          : c.candidate_number;
+          : 'Foto Calon';
         return `
-          <div class="candidate-card">
-            <span class="rank" id="rank-${c.candidate_id}">#${rankOf[c.candidate_id]}</span>
-            <div class="avatar">${photo}</div>
-            <div class="cand-number">CALON ${c.candidate_number}</div>
-            <div class="cand-name">${escapeHtml(c.name)}</div>
-            <div class="cand-votes" id="votes-${c.candidate_id}">0</div>
-            <div class="cand-pct" id="pct-${c.candidate_id}">0.00%</div>
-            <div class="progress-track"><div class="progress-fill" id="fill-${c.candidate_id}" style="width:0%"></div></div>
+          <div class="report-card">
+            <div class="report-card-num">${c.candidate_number}</div>
+            <div class="report-card-body">
+              <div class="report-card-photo">${photo}</div>
+              <div class="report-card-result">
+                <span class="pct" id="pct-${c.candidate_id}">0,00%</span>
+                <span class="votes" id="votes-${c.candidate_id}">0 Suara</span>
+              </div>
+            </div>
+            <div class="report-card-footer">${escapeHtml(c.name)}</div>
           </div>
         `;
       }).join('');
+      el.candidateGrid.style.setProperty('--cards', String(overall.length));
       state.candidateCardsBuilt = true;
     }
 
     overall.forEach((c) => {
-      const p = pct(c.vote_count, totalValid);
       const votesEl = document.getElementById(`votes-${c.candidate_id}`);
-      if (votesEl) animateNumber(votesEl, c.vote_count, 600);
+      if (votesEl) {
+        animateNumber(votesEl, c.vote_count, (v) => `${Math.round(v).toLocaleString('id-ID')} Suara`);
+      }
       const pctEl = document.getElementById(`pct-${c.candidate_id}`);
-      if (pctEl) pctEl.textContent = p + '%';
-      const fillEl = document.getElementById(`fill-${c.candidate_id}`);
-      if (fillEl) fillEl.style.width = p + '%';
-      const rankEl = document.getElementById(`rank-${c.candidate_id}`);
-      if (rankEl) rankEl.textContent = '#' + rankOf[c.candidate_id];
+      if (pctEl) {
+        animateNumber(pctEl, Number(pct(c.vote_count, totalValid)), (v) => v.toFixed(2).replace('.', ',') + '%');
+      }
     });
   }
 
-  function renderChart(overall) {
+  const percentageLabelPlugin = {
+    id: 'percentageLabel',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      ctx.save();
+      ctx.fillStyle = '#111111';
+      ctx.font = 'bold 12px Arial, Helvetica, sans-serif';
+      ctx.textAlign = 'center';
+      meta.data.forEach((bar, i) => {
+        const value = chart.data.datasets[0].data[i];
+        ctx.fillText(value.toFixed(2).replace('.', ',') + '%', bar.x, bar.y - 10);
+      });
+      ctx.restore();
+    },
+  };
+
+  function renderChart(overall, totalValid) {
     const ctx = document.getElementById('overallChart');
-    const labels = overall.map((c) => `${c.candidate_number}. ${c.name}`);
-    const data = overall.map((c) => c.vote_count);
+    const labels = overall.map((c) => `PASLON ${c.candidate_number}`);
+    const votes = overall.map((c) => c.vote_count);
+    const data = overall.map((c) => Number(pct(c.vote_count, totalValid)));
+    const colors = overall.map((c, i) => CANDIDATE_COLORS[i % CANDIDATE_COLORS.length]);
+
+    // Axis tracks the leader instead of always spanning to 100, so bars fill the
+    // plot the way the printed tally sheet shows them.
+    const peak = data.length ? Math.max(...data) : 0;
+    const axisMax = Math.min(100, Math.max(20, Math.ceil((peak + 8) / 10) * 10));
 
     if (state.chart) {
       state.chart.data.labels = labels;
       state.chart.data.datasets[0].data = data;
-      state.chart.update();
+      state.chart.data.datasets[0].votes = votes;
+      state.chart.data.datasets[0].backgroundColor = colors;
+      state.chart.options.scales.y.max = axisMax;
+      // 'active' skips the entry animation and its per-bar stagger: on a live tick
+      // the bars should glide to the new value, not replay the whole reveal.
+      state.chart.update('active');
       return;
     }
 
@@ -117,16 +159,18 @@
         labels,
         datasets: [{
           data,
-          backgroundColor: '#0d1b3e',
-          hoverBackgroundColor: '#1a2b4a',
-          borderRadius: 4,
-          maxBarThickness: 42,
+          votes,
+          backgroundColor: colors,
+          borderRadius: 0,
+          maxBarThickness: 72,
+          hoverBackgroundColor: colors,
         }],
       },
+      plugins: [percentageLabelPlugin],
       options: {
-        indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: { top: 24 } },
         animation: {
           duration: 900,
           easing: 'easeOutQuart',
@@ -138,74 +182,146 @@
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#0d1b3e',
-            titleFont: { weight: 'bold' },
+            backgroundColor: '#111111',
+            titleFont: { family: 'Arial, Helvetica, sans-serif', weight: '700', size: 12 },
+            bodyFont: { family: 'Arial, Helvetica, sans-serif', weight: '600', size: 12 },
             padding: 10,
-            cornerRadius: 6,
+            cornerRadius: 2,
             displayColors: false,
             callbacks: {
-              label: (ctx) => `${ctx.parsed.x.toLocaleString('id-ID')} suara`,
+              label: (ctx) => `${ctx.dataset.votes[ctx.dataIndex].toLocaleString('id-ID')} suara`,
             },
           },
         },
         scales: {
-          x: { ticks: { color: '#4b5570' }, grid: { color: '#e3e5eb' }, beginAtZero: true },
-          y: { ticks: { color: '#0d1b3e', font: { weight: 'bold' } }, grid: { display: false } },
+          x: {
+            ticks: {
+              color: '#4a4a4a',
+              font: { family: 'Arial, Helvetica, sans-serif', weight: '700', size: 11 },
+            },
+            grid: { display: false },
+            border: { color: '#111111' },
+          },
+          y: {
+            beginAtZero: true,
+            max: axisMax,
+            ticks: {
+              stepSize: 10,
+              color: '#8a8a86',
+              font: { family: 'Arial, Helvetica, sans-serif', weight: '600', size: 10 },
+              padding: 8,
+              callback: (v) => v + '%',
+            },
+            grid: { color: '#ececea', drawTicks: false },
+            border: { display: false },
+          },
         },
       },
     });
   }
 
-  function renderTpsProgress(overview) {
-    el.tpsProgressGrid.innerHTML = overview.map((r) => {
-      const cls = (r.status === 'locked' || r.status === 'completed') ? 'locked' : r.status;
-      return `<a class="tps-dot ${cls}" href="live/tps.html?n=${r.tps_number}">${padTps(r.tps_number)}</a>`;
-    }).join('');
+  // Rows are built once and then written cell by cell. Re-serialising 40 rows of
+  // innerHTML on every realtime tick was the dashboard's main source of jank — it
+  // threw away and rebuilt ~300 nodes several times a second while counting.
+  const tableRows = new Map(); // tps_id -> {tr, cells[], total, status}
+
+  function buildTpsTable(overview) {
+    el.tpsTableHeadRow.innerHTML = [
+      '<th>TPS</th>',
+      ...state.candidates.map((c) => `<th>Calon ${c.candidate_number}</th>`),
+      '<th>Total</th>', '<th>Status</th>',
+    ].join('');
+
+    const frag = document.createDocumentFragment();
+    tableRows.clear();
+
+    overview.forEach((r) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><a href="live/tps.html?n=${r.tps_number}">${padTps(r.tps_number)}</a></td>
+        ${state.candidates.map(() => '<td class="is-zero">0</td>').join('')}
+        <td class="cell-total is-zero">0</td>
+        <td class="cell-status"><span class="status-dot"></span><span class="status-text"></span></td>
+      `;
+      frag.appendChild(tr);
+      const tds = tr.querySelectorAll('td');
+      tableRows.set(r.tps_id, {
+        tr,
+        cells: Array.from(tds).slice(1, 1 + state.candidates.length),
+        total: tr.querySelector('.cell-total'),
+        statusDot: tr.querySelector('.status-dot'),
+        statusText: tr.querySelector('.status-text'),
+      });
+    });
+
+    el.tpsTableBody.replaceChildren(frag);
   }
 
   function renderTpsTable(overview, byTps) {
-    el.tpsTableHeadRow.innerHTML = [
-      '<th>TPS</th>',
-      ...state.candidates.map((c) => `<th>C${c.candidate_number}</th>`),
-      '<th>TS</th>', '<th>Sah</th>', '<th>Total</th>', '<th>Status</th>',
-    ].join('');
+    if (tableRows.size !== overview.length) buildTpsTable(overview);
 
-    el.tpsTableBody.innerHTML = overview.map((r) => {
-      const over = r.dpt_limit && r.total_votes > r.dpt_limit;
+    overview.forEach((r) => {
+      const row = tableRows.get(r.tps_id);
+      if (!row) return;
+
       const perCandidate = byTps[r.tps_id] || {};
-      return `
-        <tr class="${over ? 'over-limit' : ''}">
-          <td><a href="live/tps.html?n=${r.tps_number}">${padTps(r.tps_number)}</a></td>
-          ${state.candidates.map((c) => `<td>${perCandidate[c.id] || 0}</td>`).join('')}
-          <td>${r.invalid_votes}</td>
-          <td>${r.valid_votes}</td>
-          <td>${r.total_votes}</td>
-          <td>${statusLabelId(r.status)}</td>
-        </tr>
-      `;
-    }).join('');
+      state.candidates.forEach((c, i) => {
+        const n = perCandidate[c.id] || 0;
+        const cell = row.cells[i];
+        const text = String(n);
+        if (cell.textContent !== text) {
+          cell.textContent = text;
+          cell.classList.toggle('is-zero', !n);
+        }
+      });
+
+      const total = String(r.total_votes);
+      if (row.total.textContent !== total) {
+        row.total.textContent = total;
+        row.total.classList.toggle('is-zero', !r.total_votes);
+      }
+
+      const statusClass = 'status-dot status-' + r.status;
+      if (row.statusDot.className !== statusClass) {
+        row.statusDot.className = statusClass;
+        row.statusText.textContent = statusLabelId(r.status);
+      }
+
+      const over = Boolean(r.dpt_limit && r.total_votes > r.dpt_limit);
+      row.tr.classList.toggle('over-limit', over);
+    });
   }
 
+  // The per-TPS rows already contain everything the overall totals need, so the
+  // separate get_overall_summary round trip was dropped: two requests per tick
+  // instead of three.
   async function refresh() {
-    const [{ data: overview, error: ovErr }, { data: overall, error: ovaErr }, { data: summaryRows }] = await Promise.all([
+    const [{ data: overview, error: ovErr }, { data: summaryRows, error: sumErr }] = await Promise.all([
       sb.rpc('get_tps_overview', { p_election_id: state.election.id }),
-      sb.rpc('get_overall_summary', { p_election_id: state.election.id }),
       sb.from('vote_summary').select('tps_id, candidate_id, vote_count').eq('election_id', state.election.id),
     ]);
 
-    if (ovErr || ovaErr) return;
+    if (ovErr || sumErr) return;
 
     const byTps = {};
+    const perCandidateTotal = {};
     (summaryRows || []).forEach((r) => {
       if (r.candidate_id === null) return;
       byTps[r.tps_id] = byTps[r.tps_id] || {};
       byTps[r.tps_id][r.candidate_id] = r.vote_count;
+      perCandidateTotal[r.candidate_id] = (perCandidateTotal[r.candidate_id] || 0) + r.vote_count;
     });
+
+    const overall = state.candidates.map((c) => ({
+      candidate_id: c.id,
+      candidate_number: c.candidate_number,
+      name: c.name,
+      vote_count: perCandidateTotal[c.id] || 0,
+    }));
 
     const { totalValid } = renderHeader(overview, overall);
     renderCandidates(overall, totalValid);
-    renderChart(overall);
-    renderTpsProgress(overview);
+    renderChart(overall, totalValid);
     renderTpsTable(overview, byTps);
     el.updatedAt.textContent = `Terakhir diperbarui: ${formatTime(new Date())}`;
   }
@@ -216,12 +332,23 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tps' }, () => { state.dirty = true; })
       .subscribe();
 
+    // A hidden tab keeps collecting realtime events but stops querying: the flag
+    // stays set and one refresh catches everything up when the tab comes back.
     setInterval(() => {
-      if (state.dirty) {
+      if (state.dirty && !document.hidden && !state.refreshing) {
         state.dirty = false;
-        refresh();
+        state.refreshing = true;
+        refresh().finally(() => { state.refreshing = false; });
       }
     }, REFRESH_THROTTLE_MS);
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && state.dirty && !state.refreshing) {
+        state.dirty = false;
+        state.refreshing = true;
+        refresh().finally(() => { state.refreshing = false; });
+      }
+    });
   }
 
   async function init() {

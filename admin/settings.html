@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Snapshot — Pilkades Live Count</title>
+  <title>Pengaturan — Pilkades Live Count</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
   <meta name="theme-color" content="#111111" />
   <link rel="preconnect" href="https://srlsyxlkcgscbngbrqzw.supabase.co" crossorigin />
@@ -18,8 +18,7 @@
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/nav.css" />
   <link rel="stylesheet" href="../css/tps.css" />
-  <link rel="stylesheet" href="../css/logs.css" />
-  <link rel="stylesheet" href="../css/snapshots.css" />
+  <link rel="stylesheet" href="../css/candidates.css" />
 </head>
 <body>
   <div class="page-header">
@@ -30,23 +29,28 @@
   </div>
 
   <div class="page-body">
-    <div class="page-title">Snapshot &amp; Backup</div>
-    <div class="page-sub">Cadangan ringkas hasil penghitungan. Otomatis dibuat tiap TPS dikunci — atau buat manual kapan saja. Bukan pengganti riwayat vote-event.</div>
+    <div class="page-title">Pengaturan Pemilihan</div>
+    <div class="page-sub">Nama pemilihan, desa, dan status berjalan ditampilkan di dashboard publik.</div>
 
-    <div class="snapshot-toolbar">
-      <button id="createSnapshotBtn">Buat Snapshot Sekarang</button>
-    </div>
-
-    <div class="panel">
-      <div id="snapshotTable">
-        <div class="snapshot-row head">
-          <span>Waktu</span>
-          <span>Sah</span>
-          <span>Tidak Sah</span>
-          <span>Total</span>
-          <span></span>
-        </div>
-        <!-- rows rendered by snapshots.js -->
+    <div class="candidate-form" style="max-width: 480px;">
+      <div class="form-row">
+        <label>Nama Pemilihan</label>
+        <input type="text" id="fieldElectionName" placeholder="mis. Pilkades 2026" />
+      </div>
+      <div class="form-row">
+        <label>Nama Desa</label>
+        <input type="text" id="fieldVillageName" placeholder="mis. Desa Contoh" />
+      </div>
+      <div class="form-row">
+        <label>Status Pemilihan</label>
+        <select id="fieldElectionStatus">
+          <option value="setup">Persiapan</option>
+          <option value="live">Live / Berjalan</option>
+          <option value="completed">Selesai</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button id="saveSettingsBtn" class="primary">Simpan Pengaturan</button>
       </div>
     </div>
   </div>
@@ -57,9 +61,9 @@
   <script src="../js/supabase.js"></script>
   <script src="../js/utils.js"></script>
   <script src="../js/nav.js"></script>
-  <script src="../js/snapshots.js"></script>
+  <script src="../js/settings-manage.js"></script>
   <script>
-    initNav({ active: 'snapshots', hamburgerTarget: '#hamburgerBtn', links: [
+    initNav({ active: 'settings', hamburgerTarget: '#hamburgerBtn', links: [
         { key: 'dashboard', label: 'Dashboard (Publik)', href: '../index.html' },
         { key: 'input', label: 'Rapid Input', href: 'input.html' },
         { key: 'tps', label: 'TPS', href: 'tps.html' },

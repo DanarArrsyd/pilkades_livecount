@@ -1,0 +1,169 @@
+/* Enterprise navy · Input Rekap TPS — TPS number grid + additive delta form */
+
+.tally-layout {
+  display: grid;
+  grid-template-columns: clamp(200px, 18vw, 280px) minmax(0, 1fr);
+  gap: clamp(var(--space-4), 3vw, 40px);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .tally-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.tally-tps-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.tally-tps-btn {
+  aspect-ratio: 1.25;
+  min-height: 34px;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 140ms var(--ease-out), background 140ms var(--ease-out), color 140ms var(--ease-out);
+}
+
+.tally-tps-btn:hover:not(:disabled) {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+  background: var(--color-surface-alt);
+}
+
+.tally-tps-btn.status-locked {
+  color: var(--color-danger);
+  border-color: rgba(193, 18, 31, 0.35);
+}
+
+.tally-tps-btn.is-selected,
+.tally-tps-btn.is-selected:hover:not(:disabled) {
+  background: #dff0dd;
+  border-color: var(--color-success);
+  color: #1c4f21;
+  font-weight: 800;
+}
+
+.tally-panel {
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  background: var(--color-surface);
+  padding: var(--space-5);
+}
+
+.tally-placeholder {
+  color: var(--color-ink-faint);
+  font-size: 13px;
+  text-align: center;
+  padding: var(--space-7) 0;
+}
+
+.tally-form-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.tally-form-head .num {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.tally-locked-banner {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-danger);
+  text-align: center;
+  padding: var(--space-3);
+  background: #fdecea;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-4);
+}
+
+.tally-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 130px 120px;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-soft);
+  font-size: 14px;
+}
+
+.tally-row:last-child { border-bottom: none; }
+
+.tally-row .num { color: var(--color-ink-faint); font-size: 13px; }
+
+.tally-row .current {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-muted);
+  font-size: 13px;
+}
+
+.tally-row input {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+}
+
+.tally-row input:disabled {
+  background: var(--color-surface-alt);
+  color: var(--color-ink-faint);
+}
+
+.tally-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-4);
+}
+
+.tally-actions button {
+  background: var(--color-navy);
+  color: var(--color-white);
+  border-color: var(--color-navy);
+  font-weight: 700;
+  padding: var(--space-2) var(--space-5);
+}
+
+.tally-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#toast {
+  position: fixed;
+  bottom: var(--space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: 13px;
+  max-width: calc(100vw - var(--space-6));
+}
+
+#toast.error { border-color: var(--color-danger); color: var(--color-danger); }
+#toast.success { border-color: var(--color-success); color: var(--color-success); }
+
+@media (max-width: 480px) {
+  .tally-row { grid-template-columns: 24px 1fr 90px 90px; font-size: 13px; }
+}

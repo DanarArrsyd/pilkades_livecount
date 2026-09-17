@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Kelola Paslon — Pilkades Live Count</title>
+  <title>Input Rekap TPS — Pilkades Live Count</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230d1b3e%27/%3E%3Ctext x=%2750%27 y=%2768%27 font-size=%2760%27 font-family=%27Arial%27 fill=%27%23ffffff%27 text-anchor=%27middle%27%3EP%3C/text%3E%3C/svg%3E" />
   <meta name="theme-color" content="#111111" />
   <link rel="preconnect" href="https://srlsyxlkcgscbngbrqzw.supabase.co" crossorigin />
@@ -17,8 +17,7 @@
   <link rel="stylesheet" href="../css/variables.css" />
   <link rel="stylesheet" href="../css/base.css" />
   <link rel="stylesheet" href="../css/nav.css" />
-  <link rel="stylesheet" href="../css/tps.css" />
-  <link rel="stylesheet" href="../css/candidates.css" />
+  <link rel="stylesheet" href="../css/tally.css" />
 </head>
 <body>
   <div class="page-header">
@@ -29,60 +28,21 @@
   </div>
 
   <div class="page-body">
-    <div class="page-title">Kelola Paslon</div>
-    <div class="page-sub">Kelola nomor urut, nama, foto, dan status aktif tiap paslon. Perubahan langsung tampil di dashboard publik.</div>
-
-    <div class="candidate-toolbar">
-      <button id="addCandidateBtn">+ Tambah Paslon</button>
-    </div>
-
-    <div class="candidate-form hidden" id="candidateForm">
-      <h3 id="formTitle">Tambah Paslon</h3>
-
-      <div class="form-row">
-        <label for="fieldNumber">Nomor Urut</label>
-        <input type="number" id="fieldNumber" min="1" required />
-      </div>
-
-      <div class="form-row">
-        <label>Nama</label>
-        <div>
-          <div class="name-fields" id="nameFields"></div>
-          <button type="button" class="add-name-btn" id="addNameBtn" style="margin-top: 8px;">+ Tambah Nama</button>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label for="fieldPhotoInput">Foto</label>
-        <div class="photo-field">
-          <img class="photo-preview" id="photoPreview" alt="" />
-          <div class="photo-field-controls">
-            <input type="file" id="fieldPhotoInput" accept="image/*" />
-            <span id="photoUploadStatus" style="font-size: 12px; color: var(--color-ink-muted);"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label for="fieldDescription">Deskripsi</label>
-        <textarea id="fieldDescription" placeholder="Opsional — visi/misi singkat, dsb."></textarea>
-      </div>
-
-      <div class="form-row">
-        <label>Status</label>
-        <div class="checkbox-row">
-          <input type="checkbox" id="fieldActive" checked />
-          <label for="fieldActive" style="font-weight: 400; padding: 0;">Aktif (tampil di dashboard publik)</label>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="button" id="cancelFormBtn">Batal</button>
-        <button type="button" class="primary" id="saveFormBtn">Simpan</button>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Input Rekap TPS</div>
+        <div class="page-sub">Input hasil akhir per paslon untuk satu TPS sekaligus. Mengisi lagi akan menambah dari angka yang sudah tersimpan (boleh angka negatif untuk koreksi).</div>
       </div>
     </div>
 
-    <div class="candidate-list" id="candidateList"></div>
+    <div class="tally-layout">
+      <div>
+        <div class="tally-tps-grid" id="tallyTpsGrid"></div>
+      </div>
+      <div class="tally-panel" id="tallyPanel">
+        <div class="tally-placeholder">Pilih TPS dulu.</div>
+      </div>
+    </div>
   </div>
 
   <div id="toast" class="hidden" role="status" aria-live="assertive"></div>
@@ -91,12 +51,9 @@
   <script src="../js/supabase.js"></script>
   <script src="../js/utils.js"></script>
   <script src="../js/nav.js"></script>
-  <script src="../js/candidates.js"></script>
+  <script src="../js/tally-input.js"></script>
   <script>
-    initNav({
-      active: 'candidates',
-      hamburgerTarget: '#hamburgerBtn',
-      links: [
+    initNav({ active: 'tally', hamburgerTarget: '#hamburgerBtn', links: [
         { key: 'dashboard', label: 'Dashboard (Publik)', href: '../index.html' },
         { key: 'input', label: 'Rapid Input', href: 'input.html' },
         { key: 'tally', label: 'Input Rekap TPS', href: 'tally.html' },
@@ -106,8 +63,7 @@
         { key: 'export', label: 'Export', href: 'export.html' },
         { key: 'snapshots', label: 'Snapshot', href: 'snapshots.html' },
         { key: 'settings', label: 'Pengaturan', href: 'settings.html' },
-      ],
-    });
+      ] });
   </script>
   <script src="../js/pwa.js"></script>
 </body>

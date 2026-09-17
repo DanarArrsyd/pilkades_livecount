@@ -44,9 +44,28 @@
   background: var(--color-surface-alt);
 }
 
+.tally-tps-btn.status-counting {
+  color: #1c4f21;
+  border-color: var(--color-success);
+  background: #f2faf1;
+}
+
+.tally-tps-btn.status-paused {
+  color: #7a4e07;
+  border-color: var(--color-warning);
+  background: #fdf6e8;
+}
+
+.tally-tps-btn.status-completed {
+  color: #2f2f7a;
+  border-color: #4c4ddb;
+  background: #eceafc;
+}
+
 .tally-tps-btn.status-locked {
   color: var(--color-danger);
-  border-color: rgba(193, 18, 31, 0.35);
+  border-color: var(--color-danger);
+  background: #fdecea;
 }
 
 .tally-tps-btn.is-selected,

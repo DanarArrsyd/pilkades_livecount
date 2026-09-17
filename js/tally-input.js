@@ -63,6 +63,8 @@
       .select('candidate_id, vote_count')
       .eq('tps_id', tpsId);
 
+    if (state.selectedTpsId !== tpsId) return;
+
     if (error) {
       showToast('Gagal muat rekap TPS: ' + error.message, 'error');
       el.panel.innerHTML = '<div class="tally-placeholder">Gagal muat data.</div>';
@@ -119,15 +121,21 @@
   function collectDeltas() {
     const inputs = el.panel.querySelectorAll('input[data-candidate-id]');
     const deltas = [];
+    let invalidRaw = null;
     inputs.forEach((input) => {
+      if (invalidRaw !== null) return;
       const raw = input.value.trim();
       if (!raw) return;
       const delta = Number(raw);
-      if (!Number.isFinite(delta) || delta === 0) return;
+      if (!Number.isInteger(delta)) {
+        invalidRaw = raw;
+        return;
+      }
+      if (delta === 0) return;
       const candidateId = input.dataset.candidateId === 'invalid' ? null : input.dataset.candidateId;
       deltas.push({ candidate_id: candidateId, delta });
     });
-    return deltas;
+    return { deltas, invalidRaw };
   }
 
   function describeDeltas(deltas) {
@@ -138,8 +146,18 @@
     }).join(', ');
   }
 
+  function labelForCandidate(candidateId) {
+    if (candidateId === null) return 'Tidak Sah';
+    const c = state.candidates.find((x) => x.id === candidateId);
+    return c ? 'Paslon ' + c.candidate_number : '?';
+  }
+
   async function submitTally() {
-    const deltas = collectDeltas();
+    const { deltas, invalidRaw } = collectDeltas();
+    if (invalidRaw !== null) {
+      showToast(`Angka harus bulat: "${invalidRaw}".`, 'error');
+      return;
+    }
     if (deltas.length === 0) {
       showToast('Isi minimal satu angka dulu.', 'error');
       return;
@@ -152,6 +170,16 @@
 
     const row = state.overview.find((r) => r.tps_id === state.selectedTpsId);
     if (!row) return;
+
+    for (const d of deltas) {
+      const key = d.candidate_id === null ? 'invalid' : d.candidate_id;
+      const currentValue = state.currentSummary[key] || 0;
+      const projected = currentValue + d.delta;
+      if (projected < 0) {
+        showToast(`Suara ${labelForCandidate(d.candidate_id)} tidak boleh minus (saat ini ${currentValue}, ditambah ${d.delta}).`, 'error');
+        return;
+      }
+    }
 
     const confirmed = window.confirm(`TPS ${padTps(row.tps_number)} — ${describeDeltas(deltas)}. Lanjut?`);
     if (!confirmed) return;

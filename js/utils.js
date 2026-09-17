@@ -40,6 +40,7 @@ const ACTION_LABELS_ID = {
   candidate_added: 'Paslon ditambahkan',
   candidate_updated: 'Data paslon diubah',
   candidate_deleted: 'Paslon dihapus',
+  tally_bulk_adjusted: 'Rekap suara diinput/dikoreksi',
 };
 
 function actionLabelId(action) {

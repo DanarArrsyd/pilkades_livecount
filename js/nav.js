@@ -7,6 +7,7 @@ const NAV_ICONS = {
   dashboard: '<path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6V11h-6v9Zm0-16v5h6V4h-6Z"/>',
   tps: '<path d="M3 17h3v3H3v-3Zm7-6h3v9h-3v-9ZM17 5h3v15h-3V5Z"/>',
   input: '<path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h10v2H4v-2Z"/>',
+  tally: '<path d="M4 4h9v2H4V4Zm0 14h6v2H4v-2Zm0-7h7v2H4v-2Zm11 1h2v3h3v2h-3v3h-2v-3h-3v-2h3v-3Z"/>',
   candidates: '<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0v1H5v-1Z"/>',
   logs: '<path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 1.5V9h4.5L14 4.5ZM8 13h8v1.5H8V13Zm0 4h8v1.5H8V17Z"/>',
   export: '<path d="M12 3a1 1 0 0 1 1 1v9.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V4a1 1 0 0 1 1-1ZM5 19h14a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>',

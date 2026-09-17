@@ -355,6 +355,11 @@ body {
   padding-top: var(--space-2);
 }
 
+.log-badge { font-weight: 700; margin-right: 4px; }
+.log-badge.pending { color: var(--color-warning); }
+.log-badge.synced { color: var(--color-success); }
+.log-badge.rejected { color: var(--color-danger); }
+
 .last-input-label {
   font-size: 10px;
   font-weight: 600;

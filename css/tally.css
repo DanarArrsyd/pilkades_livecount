@@ -181,7 +181,30 @@
 }
 
 .tally-last-saved {
-  margin-top: var(--space-5);
-  font-size: 13px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--color-ink-muted);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  max-width: 100%;
+}
+
+.tally-last-saved.ok {
+  color: #1c4f21;
+  background: #dff0dd;
+  border-color: var(--color-success);
+}
+
+.tally-last-saved.err {
+  color: var(--color-danger);
+  background: #fdecea;
+  border-color: var(--color-danger);
+}
+
+@media (max-width: 560px) {
+  .tally-last-saved { align-self: stretch; }
 }

@@ -131,6 +131,7 @@
     'tps_counting_started', 'tps_paused', 'tps_completed', 'tps_locked', 'tps_unlocked',
     'verification_performed', 'export_generated', 'snapshot_created',
     'candidate_added', 'candidate_updated', 'candidate_deleted',
+    'tally_bulk_adjusted',
   ];
 
   async function init() {

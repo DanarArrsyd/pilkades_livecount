@@ -116,6 +116,76 @@
     `;
   }
 
+  function collectDeltas() {
+    const inputs = el.panel.querySelectorAll('input[data-candidate-id]');
+    const deltas = [];
+    inputs.forEach((input) => {
+      const raw = input.value.trim();
+      if (!raw) return;
+      const delta = Number(raw);
+      if (!Number.isFinite(delta) || delta === 0) return;
+      const candidateId = input.dataset.candidateId === 'invalid' ? null : input.dataset.candidateId;
+      deltas.push({ candidate_id: candidateId, delta });
+    });
+    return deltas;
+  }
+
+  function describeDeltas(deltas) {
+    return deltas.map((d) => {
+      if (d.candidate_id === null) return `Tidak Sah ${d.delta > 0 ? '+' : ''}${d.delta}`;
+      const c = state.candidates.find((x) => x.id === d.candidate_id);
+      return `${c ? 'Paslon ' + c.candidate_number : '?'} ${d.delta > 0 ? '+' : ''}${d.delta}`;
+    }).join(', ');
+  }
+
+  async function submitTally() {
+    const deltas = collectDeltas();
+    if (deltas.length === 0) {
+      showToast('Isi minimal satu angka dulu.', 'error');
+      return;
+    }
+
+    if (!navigator.onLine) {
+      showToast('Tidak ada koneksi — coba lagi.', 'error');
+      return;
+    }
+
+    const row = state.overview.find((r) => r.tps_id === state.selectedTpsId);
+    if (!row) return;
+
+    const confirmed = window.confirm(`TPS ${padTps(row.tps_number)} — ${describeDeltas(deltas)}. Lanjut?`);
+    if (!confirmed) return;
+
+    const btn = document.getElementById('tallySubmitBtn');
+    if (btn) btn.disabled = true;
+
+    const { data, error } = await sb.rpc('submit_tps_tally', {
+      p_tps_id: state.selectedTpsId,
+      p_deltas: deltas,
+    });
+
+    if (error) {
+      showToast('Gagal simpan: ' + error.message, 'error');
+      if (btn) btn.disabled = false;
+      return;
+    }
+
+    const current = {};
+    (data.summary || []).forEach((r) => {
+      current[r.candidate_id === null ? 'invalid' : r.candidate_id] = r.vote_count;
+    });
+    state.currentSummary = current;
+
+    row.status = data.tps_status;
+    renderGrid();
+    renderForm(row);
+    showToast('Rekap tersimpan.', 'success');
+  }
+
+  el.panel.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'tallySubmitBtn') submitTally();
+  });
+
   async function init() {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {

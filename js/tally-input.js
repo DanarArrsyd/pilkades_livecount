@@ -196,12 +196,14 @@
 
     if (error) {
       showToast('Gagal simpan: ' + error.message, 'error');
-      el.lastSaved.textContent = `Terakhir disimpan: ✗ Gagal TPS ${padTps(row.tps_number)} — ${formatTime(new Date())} — ${error.message}`;
+      el.lastSaved.className = 'tally-last-saved err';
+      el.lastSaved.textContent = `✗ Gagal TPS ${padTps(row.tps_number)} — ${formatTime(new Date())} — ${error.message}`;
       if (btn) btn.disabled = false;
       return;
     }
 
-    el.lastSaved.textContent = `Terakhir disimpan: ✓ TPS ${padTps(row.tps_number)} — ${formatTime(new Date())} (${describeDeltas(deltas)})`;
+    el.lastSaved.className = 'tally-last-saved ok';
+    el.lastSaved.textContent = `✓ Tersimpan TPS ${padTps(row.tps_number)} — ${formatTime(new Date())} (${describeDeltas(deltas)})`;
 
     if (state.selectedTpsId !== submittedTpsId) {
       const currentBtn = document.getElementById('tallySubmitBtn');

@@ -120,6 +120,27 @@
     return data.publicUrl;
   }
 
+  // Storage cleanup: candidate photos are never referenced from more than one
+  // candidate, so once a photo is replaced or its candidate is deleted, the old
+  // file in the bucket is dead weight. Best-effort — a failure here shouldn't
+  // block the save/delete the user actually asked for.
+  function storagePathFromUrl(url) {
+    if (!url) return null;
+    const marker = `/storage/v1/object/public/${BUCKET}/`;
+    const idx = url.indexOf(marker);
+    if (idx === -1) return null;
+    return decodeURIComponent(url.slice(idx + marker.length));
+  }
+
+  async function deleteStoragePhoto(url) {
+    const path = storagePathFromUrl(url);
+    if (!path) return;
+    const { error } = await sb.storage.from(BUCKET).remove([path]);
+    if (error) {
+      console.warn('Gagal hapus foto lama dari storage:', error.message);
+    }
+  }
+
   // --- form open/close ---
 
   function openForm(candidate) {
@@ -174,6 +195,8 @@
     }
 
     el.saveBtn.disabled = true;
+    const oldPhotoUrl = state.pendingPhotoUrl;
+    const replacingPhoto = Boolean(state.pendingPhotoFile);
     let photoUrl;
     try {
       photoUrl = await uploadPhotoIfNeeded();
@@ -206,6 +229,10 @@
       return;
     }
 
+    if (replacingPhoto && oldPhotoUrl && oldPhotoUrl !== photoUrl) {
+      await deleteStoragePhoto(oldPhotoUrl);
+    }
+
     await logActivity(state.editingId ? 'candidate_updated' : 'candidate_added', null, { candidate_number: number, name: payload.name });
     showToast('Paslon tersimpan.', 'success');
     closeForm();
@@ -222,6 +249,7 @@
       showToast('Gagal hapus: ' + error.message, 'error');
       return;
     }
+    await deleteStoragePhoto(candidate.photo_url);
     await logActivity('candidate_deleted', null, { candidate_number: candidate.candidate_number, name: candidate.name });
     showToast('Paslon dihapus.', 'success');
     await loadCandidates();

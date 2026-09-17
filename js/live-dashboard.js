@@ -40,6 +40,8 @@
     statTpsDone: document.getElementById('statTpsDone'),
     statValid: document.getElementById('statValid'),
     statInvalid: document.getElementById('statInvalid'),
+    statTotalDpt: document.getElementById('statTotalDpt'),
+    statTurnout: document.getElementById('statTurnout'),
     candidateGrid: document.getElementById('candidateGrid'),
     tpsTableHeadRow: document.getElementById('tpsTableHeadRow'),
     tpsTableBody: document.getElementById('tpsTableBody'),
@@ -68,6 +70,13 @@
     const totalInvalid = overview.reduce((s, r) => s + Number(r.invalid_votes), 0);
     el.statValid.textContent = `${totalValid.toLocaleString('id-ID')} SAH`;
     el.statInvalid.textContent = `${totalInvalid.toLocaleString('id-ID')} TIDAK SAH`;
+
+    const tpsWithDpt = overview.filter((r) => r.dpt_limit);
+    const totalDpt = tpsWithDpt.reduce((s, r) => s + Number(r.dpt_limit), 0);
+    el.statTotalDpt.textContent = `${totalDpt.toLocaleString('id-ID')} (${tpsWithDpt.length}/${total} TPS)`;
+    el.statTurnout.textContent = totalDpt > 0
+      ? `${Math.round((totalValid + totalInvalid) / totalDpt * 100)}%`
+      : 'Belum ada data DPT';
 
     el.resultStatus.classList.toggle('final', allLocked);
     el.resultStatus.querySelector('span:last-child').textContent = allLocked ? 'Selesai' : 'Live Count';

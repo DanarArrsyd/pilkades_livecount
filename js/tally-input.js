@@ -168,7 +168,8 @@
       return;
     }
 
-    const row = state.overview.find((r) => r.tps_id === state.selectedTpsId);
+    const submittedTpsId = state.selectedTpsId;
+    const row = state.overview.find((r) => r.tps_id === submittedTpsId);
     if (!row) return;
 
     for (const d of deltas) {
@@ -188,13 +189,19 @@
     if (btn) btn.disabled = true;
 
     const { data, error } = await sb.rpc('submit_tps_tally', {
-      p_tps_id: state.selectedTpsId,
+      p_tps_id: submittedTpsId,
       p_deltas: deltas,
     });
 
     if (error) {
       showToast('Gagal simpan: ' + error.message, 'error');
       if (btn) btn.disabled = false;
+      return;
+    }
+
+    if (state.selectedTpsId !== submittedTpsId) {
+      const currentBtn = document.getElementById('tallySubmitBtn');
+      if (currentBtn) currentBtn.disabled = false;
       return;
     }
 

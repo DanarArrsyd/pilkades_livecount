@@ -170,6 +170,7 @@
 
     state.rows.forEach((row) => {
       const over = row.dpt_limit && row.total_votes > row.dpt_limit;
+      const pct = row.dpt_limit ? Math.round((row.total_votes / row.dpt_limit) * 100) : null;
       const el2 = document.createElement('div');
       el2.className = 'tps-row';
       el2.innerHTML = `
@@ -177,7 +178,9 @@
         <span class="badge status-${row.status}">${statusLabelId(row.status)}</span>
         <span>
           ${row.name ? `<div class="tps-meta">${escapeHtml(row.name)}</div>` : ''}
-          ${row.is_verified ? '<span class="verified-mark">✓ terverifikasi</span>' : ''}${over ? `<div class="limit-warning">Melebihi DPT (${row.total_votes}/${row.dpt_limit})</div>` : ''}
+          ${row.is_verified ? '<span class="verified-mark">✓ terverifikasi</span>' : ''}
+          ${pct !== null ? `<div class="dpt-turnout">${pct}% dari DPT (${row.total_votes}/${row.dpt_limit})</div>` : ''}
+          ${over ? `<div class="limit-warning">Melebihi DPT (${row.total_votes}/${row.dpt_limit})</div>` : ''}
         </span>
         <span class="votes">${row.valid_votes}</span>
         <span class="votes">${row.invalid_votes}</span>

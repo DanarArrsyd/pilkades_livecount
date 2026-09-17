@@ -940,14 +940,27 @@ body.report-body .hamburger-btn:hover:not(:disabled) {
 }
 
 .tps-btn.status-counting {
-  color: var(--flag);
-  border-color: rgba(193, 18, 31, 0.35);
+  color: #1c4f21;
+  border-color: var(--color-success);
+  background: #f2faf1;
 }
 
-.tps-btn.status-completed,
+.tps-btn.status-paused {
+  color: #7a4e07;
+  border-color: var(--color-warning);
+  background: #fdf6e8;
+}
+
+.tps-btn.status-completed {
+  color: #2f2f7a;
+  border-color: #4c4ddb;
+  background: #eceafc;
+}
+
 .tps-btn.status-locked {
-  background: var(--paper-tint);
-  color: var(--ink);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: #fdecea;
 }
 
 .tps-btn.is-active,

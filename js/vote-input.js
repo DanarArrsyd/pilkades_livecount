@@ -16,6 +16,8 @@
     queue: [],            // pending vote items not yet confirmed by the server
     flushing: false,
     snapshots: new Map(), // tps_number -> {tps, summary} from the last server read
+    lastLogEventId: null, // clientEventId the log line currently displays, for stale-resolution guarding
+    lastLogText: '',      // the log line's descriptive text (no badge), reused when a resolution updates just the badge
   };
 
   const el = {
@@ -109,6 +111,13 @@
     const d = document.createElement('div');
     d.textContent = str;
     return d.innerHTML;
+  }
+
+  function logBadge(status) {
+    if (status === 'pending') return '<span class="log-badge pending">⏳ Menunggu sinkron</span> ';
+    if (status === 'synced') return '<span class="log-badge synced">✓ Tersimpan</span> ';
+    if (status === 'rejected') return '<span class="log-badge rejected">✗ Ditolak</span> ';
+    return '';
   }
 
   // Coalesced to one write per frame: holding a key down fires far faster than the
@@ -291,8 +300,9 @@
     state.queue.push(item);
     persistQueue();
 
-    const suffix = navigator.onLine ? '' : ' (menunggu sinkron)';
-    el.lastInput.textContent = `+1 ${candidateLabel} — TPS ${padTps(state.activeTps.tps_number)} — ${formatTime(new Date())}${suffix}`;
+    state.lastLogEventId = item.clientEventId;
+    state.lastLogText = `+1 ${escapeHtml(candidateLabel)} — TPS <strong>${padTps(state.activeTps.tps_number)}</strong> — ${formatTime(new Date())}`;
+    el.lastInput.innerHTML = logBadge('pending') + state.lastLogText;
 
     updateConnState();
     attemptFlush();
@@ -316,7 +326,9 @@
       const label = item.candidateId
         ? (state.candidates.find((c) => c.id === item.candidateId) || {}).name || '?'
         : 'Tidak Sah';
-      el.lastInput.textContent = `UNDO (belum tersinkron) — ${label} — TPS ${padTps(state.activeTps.tps_number)} — ${formatTime(new Date())}`;
+      state.lastLogEventId = null;
+      state.lastLogText = `UNDO — ${escapeHtml(label)} — TPS <strong>${padTps(state.activeTps.tps_number)}</strong> — ${formatTime(new Date())}`;
+      el.lastInput.innerHTML = logBadge('synced') + state.lastLogText;
       showToast('Undo berhasil.', 'success');
       updateConnState();
       return;
@@ -360,7 +372,9 @@
     const label = data.event.candidate_id
       ? (state.candidates.find((c) => c.id === data.event.candidate_id) || {}).name || '?'
       : 'Tidak Sah';
-    el.lastInput.textContent = `UNDO — ${label} — TPS ${padTps(state.activeTps.tps_number)} — ${formatTime(new Date())}`;
+    state.lastLogEventId = null;
+    state.lastLogText = `UNDO — ${escapeHtml(label)} — TPS <strong>${padTps(state.activeTps.tps_number)}</strong> — ${formatTime(new Date())}`;
+    el.lastInput.innerHTML = logBadge('synced') + state.lastLogText;
     showToast('Undo berhasil.', 'success');
 
     const cachedAfterUndo = state.snapshots.get(state.activeTps.tps_number);
@@ -405,6 +419,9 @@
 
       if (result.error) {
         showToast(`Vote TPS ${padTps(item.tpsNumber)} ditolak server: ${result.error.message}`, 'error');
+        if (item.clientEventId === state.lastLogEventId) {
+          el.lastInput.innerHTML = logBadge('rejected') + state.lastLogText + ' — ' + escapeHtml(result.error.message);
+        }
         state.queue.shift();
         persistQueue();
         continue;
@@ -412,6 +429,10 @@
 
       state.queue.shift();
       persistQueue();
+
+      if (item.clientEventId === state.lastLogEventId) {
+        el.lastInput.innerHTML = logBadge('synced') + state.lastLogText;
+      }
 
       const cached = state.snapshots.get(item.tpsNumber);
       if (cached) {

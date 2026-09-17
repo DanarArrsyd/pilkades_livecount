@@ -327,7 +327,7 @@
         ? (state.candidates.find((c) => c.id === item.candidateId) || {}).name || '?'
         : 'Tidak Sah';
       state.lastLogEventId = null;
-      state.lastLogText = `UNDO (belum tersinkron) — ${escapeHtml(label)} — TPS <strong>${padTps(state.activeTps.tps_number)}</strong> — ${formatTime(new Date())}`;
+      state.lastLogText = `UNDO — ${escapeHtml(label)} — TPS <strong>${padTps(state.activeTps.tps_number)}</strong> — ${formatTime(new Date())}`;
       el.lastInput.innerHTML = logBadge('synced') + state.lastLogText;
       showToast('Undo berhasil.', 'success');
       updateConnState();

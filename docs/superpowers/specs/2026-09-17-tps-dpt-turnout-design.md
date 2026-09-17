@@ -42,11 +42,12 @@ Currently (lines 60-76), `renderHeader(overview, overall)` computes `totalValid`
 ```js
 const tpsWithDpt = overview.filter((r) => r.dpt_limit);
 const totalDpt = tpsWithDpt.reduce((s, r) => s + Number(r.dpt_limit), 0);
+const votesWithDpt = tpsWithDpt.reduce((s, r) => s + Number(r.total_votes), 0);
 ```
 
 Two new stat lines in the dashboard header (see UI section for exact markup):
 - **Total DPT**: `30.500 (38/40 TPS)` — the sum, with a parenthetical showing how many of the total TPS count actually have `dpt_limit` set, so a partially-filled-in DPT dataset is never presented as if it were complete.
-- **Turnout**: `72%` — computed as `((totalValid + totalInvalid) / totalDpt * 100)`, rounded, ONLY when `totalDpt > 0`; when no TPS has `dpt_limit` set yet, this line reads `"Belum ada data DPT"` instead of computing `NaN%` or `Infinity%`.
+- **Turnout**: `72%` — computed as `(votesWithDpt / totalDpt * 100)`, rounded, ONLY when `totalDpt > 0`, where `votesWithDpt` sums `total_votes` from the SAME subset of TPS that have `dpt_limit` set (not all TPS) — the numerator and denominator must cover the same TPS or the percentage is meaningless in a partially-filled-DPT dataset; when no TPS has `dpt_limit` set yet, this line reads `"Belum ada data DPT"` instead of computing `NaN%` or `Infinity%`.
 
 Both values recompute every `refresh()` call exactly like the existing stats — no separate polling, no separate realtime subscription, they ride the same 800ms-throttled cycle already in place.
 
@@ -82,7 +83,7 @@ No new CSS needed — `.stat-line`/`.stat-list` styling already handles an arbit
 
 | Case | admin/tps.html row | index.html aggregate stats |
 |---|---|---|
-| `dpt_limit` not set for this TPS | Turnout line absent entirely (no `0%`) | This TPS excluded from `totalDpt` sum and from the "X/Y TPS" denominator's numerator (still counts toward Y) |
+| `dpt_limit` not set for this TPS | Turnout line absent entirely (no `0%`) | This TPS excluded from `totalDpt`, from `votesWithDpt`, and from the "X/Y TPS" denominator's numerator (still counts toward Y) |
 | No TPS has `dpt_limit` set at all | N/A (per-row, unaffected) | `#statTurnout` shows `"Belum ada data DPT"`; `#statTotalDpt` shows `"0 (0/{total TPS} TPS)"` |
 | `total_votes > dpt_limit` (over) | Turnout line can read e.g. `104%`; existing red `limit-warning` also shows, unchanged | Aggregate turnout can legitimately exceed 100% if enough TPS are over — not clamped, since that itself is a signal worth seeing at the aggregate level too |
 | New TPS added while counting is live | Next `loadOverview()`/`refresh()` call picks it up automatically — no code path needs to know about "new" TPS specially, since both functions always operate on the full current `overview`/`state.rows` array | Same — next `refresh()` tick includes it |

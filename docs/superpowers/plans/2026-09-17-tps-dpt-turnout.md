@@ -204,9 +204,10 @@ with:
 
     const tpsWithDpt = overview.filter((r) => r.dpt_limit);
     const totalDpt = tpsWithDpt.reduce((s, r) => s + Number(r.dpt_limit), 0);
+    const votesWithDpt = tpsWithDpt.reduce((s, r) => s + Number(r.total_votes), 0);
     el.statTotalDpt.textContent = `${totalDpt.toLocaleString('id-ID')} (${tpsWithDpt.length}/${total} TPS)`;
     el.statTurnout.textContent = totalDpt > 0
-      ? `${Math.round((totalValid + totalInvalid) / totalDpt * 100)}%`
+      ? `${Math.round(votesWithDpt / totalDpt * 100)}%`
       : 'Belum ada data DPT';
 
     el.resultStatus.classList.toggle('final', allLocked);
@@ -219,7 +220,7 @@ with:
 - [ ] **Step 4: Manually verify**
 
 Open `index.html`:
-- With some TPS having `dpt_limit` set and votes counted, confirm "Total DPT" shows the correct sum with the correct `(X/Y TPS)` count, and "Turnout" shows a percentage matching hand-calculated `(totalValid+totalInvalid)/totalDpt`.
+- With some TPS having `dpt_limit` set and votes counted, confirm "Total DPT" shows the correct sum with the correct `(X/Y TPS)` count, and "Turnout" shows a percentage matching hand-calculated `(votes from TPS with dpt_limit) / totalDpt` — i.e. only votes from the TPS counted in `totalDpt`, not votes from every TPS.
 - If no TPS has `dpt_limit` set at all, confirm "Turnout" reads "Belum ada data DPT" (not `NaN%` or `Infinity%`), and "Total DPT" reads `0 (0/{total} TPS)`.
 - Push enough TPS over their `dpt_limit` that the aggregate turnout exceeds 100%, confirm it displays as-is (e.g. "104%") rather than being clamped.
 - Trigger the existing realtime refresh path (cast a vote from another tab/session) and confirm both new stats update on the same cycle as the existing three.

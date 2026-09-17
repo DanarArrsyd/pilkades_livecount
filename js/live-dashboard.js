@@ -73,9 +73,10 @@
 
     const tpsWithDpt = overview.filter((r) => r.dpt_limit);
     const totalDpt = tpsWithDpt.reduce((s, r) => s + Number(r.dpt_limit), 0);
+    const votesWithDpt = tpsWithDpt.reduce((s, r) => s + Number(r.total_votes), 0);
     el.statTotalDpt.textContent = `${totalDpt.toLocaleString('id-ID')} (${tpsWithDpt.length}/${total} TPS)`;
     el.statTurnout.textContent = totalDpt > 0
-      ? `${Math.round((totalValid + totalInvalid) / totalDpt * 100)}%`
+      ? `${Math.round(votesWithDpt / totalDpt * 100)}%`
       : 'Belum ada data DPT';
 
     el.resultStatus.classList.toggle('final', allLocked);

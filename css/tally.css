@@ -179,3 +179,9 @@
   .tally-panel { padding: var(--space-5) var(--space-4); }
   .tally-row { grid-template-columns: 24px 1fr 90px 100px; gap: var(--space-2); font-size: 13px; }
 }
+
+.tally-last-saved {
+  margin-top: var(--space-5);
+  font-size: 13px;
+  color: var(--color-ink-muted);
+}

@@ -242,6 +242,24 @@
   // --- delete ---
 
   async function deleteCandidate(candidate) {
+    // A candidate with votes already recorded can't be deleted (vote_events/vote_summary
+    // both reference candidate_id with no cascade) — check first so the admin gets a
+    // clear message instead of a raw foreign-key-violation error from Postgres.
+    const { data: summaryRows, error: summaryError } = await sb
+      .from('vote_summary')
+      .select('vote_count')
+      .eq('candidate_id', candidate.id);
+
+    if (summaryError) {
+      showToast('Gagal cek data suara: ' + summaryError.message, 'error');
+      return;
+    }
+    const voteCount = (summaryRows || []).reduce((s, r) => s + Number(r.vote_count), 0);
+    if (voteCount > 0) {
+      showToast(`Paslon dengan suara masuk tidak bisa dihapus (${voteCount} suara).`, 'error');
+      return;
+    }
+
     if (!window.confirm(`Hapus paslon No. ${candidate.candidate_number} — ${candidate.name}? Aksi ini tidak bisa dibatalkan.`)) return;
 
     const { error } = await sb.from('candidates').delete().eq('id', candidate.id);

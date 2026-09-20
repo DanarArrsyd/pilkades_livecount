@@ -2,6 +2,13 @@
 // every query here hits public RLS policies (candidates/tps/vote_summary select-all).
 (function () {
   const REFRESH_THROTTLE_MS = 800;
+  // Realtime is the fast path, not the only path: on a busy count night the
+  // Supabase project's realtime connection cap can be hit, or a viewer's own
+  // network can drop the socket silently. Without this, a viewer who loses
+  // realtime just sees a frozen dashboard forever, since state.dirty is only
+  // ever set by a realtime event. This guarantees the page catches up within
+  // 30s even if realtime never fires again for the rest of the session.
+  const FALLBACK_REFRESH_MS = 30000;
 
   const state = {
     election: null,
@@ -359,6 +366,16 @@
         refresh().finally(() => { state.refreshing = false; });
       }
     });
+
+    // Unconditional safety net — ignores state.dirty entirely, so it still
+    // fires even if realtime silently stopped delivering events.
+    setInterval(() => {
+      if (!document.hidden && !state.refreshing) {
+        state.dirty = false;
+        state.refreshing = true;
+        refresh().finally(() => { state.refreshing = false; });
+      }
+    }, FALLBACK_REFRESH_MS);
   }
 
   async function init() {

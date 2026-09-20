@@ -13,6 +13,14 @@
 
   const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Realtime is the fast path, not the only path — see the matching comment
+  // in js/live-dashboard.js. Without this, losing the realtime connection
+  // (a Supabase connection-cap hit, a flaky viewer connection) leaves this
+  // page frozen on stale numbers forever, since every refresh here is
+  // otherwise only triggered by a realtime event.
+  const FALLBACK_REFRESH_MS = 30000;
+  let fallbackRefreshing = false;
+
   const el = {
     name: document.getElementById('electionName'),
     village: document.getElementById('electionVillage'),
@@ -272,6 +280,19 @@
     const params = new URLSearchParams(location.search);
     const requested = Number(params.get('n')) || 1;
     await selectTps(requested);
+
+    // Unconditional safety net — ignores realtime entirely, so it still
+    // fires even if the socket silently stopped delivering events.
+    setInterval(async () => {
+      if (document.hidden || fallbackRefreshing || !state.activeTpsNumber) return;
+      fallbackRefreshing = true;
+      try {
+        await refreshOverview();
+        await loadDetail(state.activeTpsNumber);
+      } finally {
+        fallbackRefreshing = false;
+      }
+    }, FALLBACK_REFRESH_MS);
   }
 
   init();

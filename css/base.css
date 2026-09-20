@@ -109,6 +109,8 @@ a { color: var(--color-navy); }
   font-size: 12px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .net-ping-dot {

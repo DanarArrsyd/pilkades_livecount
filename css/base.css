@@ -101,4 +101,28 @@ a { color: var(--color-navy); }
 .status-completed { color: var(--color-navy); }
 .status-locked { color: var(--color-danger); }
 
+.net-ping {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.net-ping-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-ink-faint);
+  flex-shrink: 0;
+}
+
+.net-ping-dot.good { background: var(--color-success); }
+.net-ping-dot.ok { background: var(--color-warning); }
+.net-ping-dot.bad { background: var(--color-danger); }
+
 .hidden { display: none !important; }

@@ -8,7 +8,7 @@
 //      than no tally at all. Offline input is already handled by the app's own
 //      persisted vote queue, which is the only thing allowed to replay writes.
 
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL_CACHE = `pilkades-shell-${VERSION}`;
 const RUNTIME_CACHE = `pilkades-runtime-${VERSION}`;
 
@@ -39,6 +39,7 @@ const SHELL_ASSETS = [
   './js/supabase.js',
   './js/utils.js',
   './js/nav.js',
+  './js/net-ping.js',
   './js/auth.js',
   './js/live-dashboard.js',
   './js/live-tps.js',
